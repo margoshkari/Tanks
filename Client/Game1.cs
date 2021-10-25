@@ -2,6 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Text.Json;
+using TankDll;
+
 
 namespace Client
 {
@@ -10,15 +13,17 @@ namespace Client
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private ClientData clientData;
-        private List<Tank> tankSprites;
+        private List<Sprite> tankSprites;
         private Tank currentTank;
+        
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             clientData = new ClientData();
-            tankSprites = new List<Tank>();
+            tankSprites = new List<Sprite>();
+            currentTank = new Tank();
         }
 
         protected override void Initialize()
@@ -30,8 +35,7 @@ namespace Client
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            currentTank = new Tank(Content.Load<Texture2D>(@"Textures\tank"));
-            tankSprites.Add(currentTank);
+            tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), currentTank));
 
         }
 
@@ -72,7 +76,7 @@ namespace Client
             _spriteBatch.Begin();
             foreach (var item in tankSprites)
             {
-                _spriteBatch.Draw(item.texture, new Rectangle(item.CoordX, item.CoordY, item.texture.Width, item.texture.Height), null, Color.White, item.Rotation, new Vector2(item.texture.Width / 2f, item.texture.Height / 2f), SpriteEffects.None, 0f);
+                _spriteBatch.Draw(item.texture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.texture.Width, item.texture.Height), null, Color.White, item.tank.Rotation, new Vector2(item.texture.Width / 2f, item.texture.Height / 2f), SpriteEffects.None, 0f);
             }
             _spriteBatch.End();
 

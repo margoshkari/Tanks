@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{3E4A3B4F-28E6-45B3-A1D2-9AEFF3955818}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TankDll", "TankDll\TankDll.csproj", "{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3E4A3B4F-28E6-45B3-A1D2-9AEFF3955818}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E4A3B4F-28E6-45B3-A1D2-9AEFF3955818}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E4A3B4F-28E6-45B3-A1D2-9AEFF3955818}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
