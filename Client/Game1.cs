@@ -1,8 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using TankDll;
 
 
@@ -13,17 +18,18 @@ namespace Client
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private ClientData clientData;
+        private List<Tank> tanks;
         private List<Sprite> tankSprites;
-        private Tank currentTank;
-        
+        private Sprite currentTank;
+        static bool isSend = false;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             clientData = new ClientData();
+            tanks = new List<Tank>();
             tankSprites = new List<Sprite>();
-            currentTank = new Tank();
         }
 
         protected override void Initialize()
@@ -35,8 +41,7 @@ namespace Client
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), currentTank));
-
+            currentTank = new Sprite(Content.Load<Texture2D>(@"Textures\tank"), new Tank());
         }
 
         protected override void Update(GameTime gameTime)
@@ -44,29 +49,64 @@ namespace Client
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if(Keyboard.GetState().IsKeyDown(Keys.W))
+            string json = string.Empty;
+            tankSprites.Clear();
+
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                currentTank.CoordY -= currentTank.Speed;
-                currentTank.Rotation = 0f;
+                currentTank.tank.CoordY -= currentTank.tank.Speed;
+                currentTank.tank.Rotation = 0f;
             }
-            else if(Keyboard.GetState().IsKeyDown(Keys.S))
+            else if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                currentTank.CoordY += currentTank.Speed;
-                currentTank.Rotation = 15.7f;
+                currentTank.tank.CoordY += currentTank.tank.Speed;
+                currentTank.tank.Rotation = 15.7f;
+
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                currentTank.CoordX -= currentTank.Speed;
-                currentTank.Rotation = -7.85f;
+                currentTank.tank.CoordX -= currentTank.tank.Speed;
+                currentTank.tank.Rotation = -7.85f;
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                currentTank.CoordX += currentTank.Speed;
-                currentTank.Rotation = 7.85f;
+                currentTank.tank.CoordX += currentTank.tank.Speed;
+                currentTank.tank.Rotation = 7.85f;
             }
 
+            if(isSend)
+            {
+                SendMsg();
+                isSend = false;
+            }
+            else
+            {
+                GetMsg();
+                isSend = true;
+            }
+           
+            foreach (var item in tanks)
+            {
+                tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), item));
+            }
 
             base.Update(gameTime);
+        }
+        private void GetMsg()
+        {
+            try
+            {
+                string json = string.Empty;
+                json = Encoding.Unicode.GetString(clientData.GetMsg().ToArray());
+                tanks = JsonSerializer.Deserialize<List<Tank>>(json);
+            }
+            catch (Exception ex) { }
+        }
+        private void SendMsg()
+        {
+            string json = string.Empty;
+            json = JsonSerializer.Serialize<Tank>(currentTank.tank);
+            clientData.socket.Send(Encoding.Unicode.GetBytes(json));
         }
 
         protected override void Draw(GameTime gameTime)

@@ -29,20 +29,37 @@ namespace Server
             this.socketClient = socketClient;
             this.iPEndPoint = iPEndPoint;
         }
-        public string GetMsg()
+        //public string GetMsg()
+        //{
+        //    int bytes = 0;
+        //    StringBuilder stringBuilder = new StringBuilder();
+        //    try
+        //    {
+        //        do
+        //        {
+        //            bytes = socketClient.Receive(data);
+        //            stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+        //        } while (socketClient.Available > 0);
+        //    }
+        //    catch (Exception ex) { }
+        //    return stringBuilder.ToString();
+        //}
+
+        public List<byte> GetMsg()
         {
+            List<byte> List_data = new List<byte>();
             int bytes = 0;
-            StringBuilder stringBuilder = new StringBuilder();
-            try
+            byte[] array = new byte[255];
+            do
             {
-                do
+                bytes = socketClient.Receive(array, array.Length, 0);
+                for (int i = 0; i < bytes; i++)
                 {
-                    bytes = socketClient.Receive(data);
-                    stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                } while (socketClient.Available > 0);
-            }
-            catch (Exception ex) { }
-            return stringBuilder.ToString();
+                    List_data.Add(array[i]);
+                }
+            } while (socketClient.Available > 0);
+
+            return List_data;
         }
     }
 }

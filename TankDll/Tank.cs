@@ -12,8 +12,8 @@ namespace TankDll
         public Tank()
         {
             Random rand = new Random();
-            CoordX = 300;
-            CoordY = 300;
+            CoordX = 100;
+            CoordY = 100;
             Speed = 3;
             Color = new int[] { rand.Next(0, 255), rand.Next(0, 255), rand.Next(0, 255) };
             Rotation = 0f;
