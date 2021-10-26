@@ -82,7 +82,7 @@ namespace Client
 
             SendMsg();
             GetMsg();
-           
+          // 
             foreach (var item in tanks)
             {
                 tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), item));

@@ -29,10 +29,10 @@ namespace Server
 
                 Task.Factory.StartNew(() => Connect());
 
-                TimerCallback timerCallback = new TimerCallback(SendData);
-                Timer timer = new Timer(timerCallback, 0, 0, 16);
+                // TimerCallback timerCallback = new TimerCallback(SendData);
+                // Timer timer = new Timer(timerCallback, 0, 0, 16);
 
-                
+                Task.Factory.StartNew(() => SendData());
             }
             catch (Exception ex)
             {
@@ -54,6 +54,7 @@ namespace Server
                 tasks.Add(new Task(() =>
                 {
                     Task.Factory.StartNew(() => GetTank());
+
                 }));
                 tasks.Last().Start();
                 id++;
@@ -81,30 +82,35 @@ namespace Server
                     json = serverData.GetMsg(index);
                     tanks[index] = JsonSerializer.Deserialize<Tank>(json);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
             }
         }
-        static void SendData(object obj)
+        static void SendData()
         {
-            try
+
+            string json = string.Empty;
+            while (true)
             {
-                string json = string.Empty;
-                if (serverData.socketClientsList.Count > 0)
+                try
                 {
-                    json = JsonSerializer.Serialize<List<Tank>>(tanks);
-                    foreach (var item in serverData.socketClientsList)
+                    if (serverData.socketClientsList.Count > 0)
                     {
-                        item.Send(Encoding.Unicode.GetBytes(json));
+                        json = JsonSerializer.Serialize<List<Tank>>(tanks);
+                        foreach (var item in serverData.socketClientsList)
+                        {
+                            item.Send(Encoding.Unicode.GetBytes(json));
+                        }
+                        Thread.Sleep(10);
                     }
-                    Thread.Sleep(10);
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("SendData(): " + ex.Message);
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
             }
         }
     }
