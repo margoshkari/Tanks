@@ -25,36 +25,36 @@ namespace Client
             this.socket = socket;
             this.iPEndPoint = iPEndPoint;
         }
-        //public string GetMsg()
-        //{
-        //    int bytes = 0;
-        //    StringBuilder stringBuilder = new StringBuilder();
-        //    try
-        //    {
-        //        do
-        //        {
-        //            bytes = socket.Receive(data);
-        //            stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-        //        } while (socket.Available > 0);
-        //    }
-        //    catch (Exception ex) { }
-        //    return stringBuilder.ToString();
-        //}
-        public List<byte> GetMsg()
+        public string GetMsg()
         {
-            List<byte> List_data = new List<byte>();
             int bytes = 0;
-            byte[] array = new byte[255];
-            do
+            StringBuilder stringBuilder = new StringBuilder();
+            try
             {
-                bytes = socket.Receive(array, array.Length, 0);
-                for (int i = 0; i < bytes; i++)
+                do
                 {
-                    List_data.Add(array[i]);
-                }
-            } while (socket.Available > 0);
-
-            return List_data;
+                    bytes = socket.Receive(data);
+                    stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                } while (socket.Available > 0);
+            }
+            catch (Exception ex) { }
+            return stringBuilder.ToString();
         }
+        //public List<byte> GetMsg()
+        //{
+        //    List<byte> List_data = new List<byte>();
+        //    int bytes = 0;
+        //    byte[] array = new byte[255];
+        //    do
+        //    {
+        //        bytes = socket.Receive(array, array.Length, 0);
+        //        for (int i = 0; i < bytes; i++)
+        //        {
+        //            List_data.Add(array[i]);
+        //        }
+        //    } while (socket.Available > 0);
+
+        //    return List_data;
+        //}
     }
 }

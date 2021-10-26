@@ -32,30 +32,7 @@ namespace Server
                 TimerCallback timerCallback = new TimerCallback(SendData);
                 Timer timer = new Timer(timerCallback, 0, 0, 16);
 
-
-                int count = 0;
-                while (true)
-                {
-                    if (serverData.socketClientsList.Count > 0 && isSend == false )
-                    {
-                        tasks.Add(new Task(() => {
-                            //while(true)
-                            //{
-                                int index = 0;
-                                string json = string.Empty;
-                                if (tanks.Last() != null)
-                                {
-                                    index = tanks.IndexOf(tanks.Last());
-                                }
-                                serverData.socketClient = serverData.socketClientsList[index];
-                                json = Encoding.Unicode.GetString(serverData.GetMsg().ToArray());
-                                tanks[index] = JsonSerializer.Deserialize<Tank>(json);
-                           // }
-                        }));
-                        tasks.Last().Start();
-                        isSend = true;
-                    }
-                }
+                
             }
             catch (Exception ex)
             {
@@ -64,6 +41,7 @@ namespace Server
 
             Console.ReadLine();
         }
+        static int id = 0;
         static void Connect()
         {
             while (true)
@@ -71,19 +49,62 @@ namespace Server
                 serverData.socketClient = serverData.socket.Accept();
                 serverData.socketClientsList.Add(serverData.socketClient);
                 tanks.Add(new Tank());
+                tanks.Last().ID = id;
+
+                tasks.Add(new Task(() =>
+                {
+                    Task.Factory.StartNew(() => GetTank());
+                }));
+                tasks.Last().Start();
+                id++;
+
+                Console.WriteLine("Client connected!");
+            }
+        }
+        static void GetTank()
+        {
+            int index = 0;
+            if (tanks.Count > 0)
+            {
+                index = tanks.IndexOf(tanks.Last());
+            }
+            string json = string.Empty;
+
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine(serverData.socketClientsList.Count);
+
+                    serverData.socketClient = serverData.socketClientsList[index];
+
+                    json = serverData.GetMsg(index);
+                    tanks[index] = JsonSerializer.Deserialize<Tank>(json);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
         static void SendData(object obj)
         {
-            string json = string.Empty;
-            if (serverData.socketClientsList.Count > 0 && isSend)
+            try
             {
-                json = JsonSerializer.Serialize<List<Tank>>(tanks);
-                foreach (var item in serverData.socketClientsList)
+                string json = string.Empty;
+                if (serverData.socketClientsList.Count > 0)
                 {
-                    item.Send(Encoding.Unicode.GetBytes(json));
+                    json = JsonSerializer.Serialize<List<Tank>>(tanks);
+                    foreach (var item in serverData.socketClientsList)
+                    {
+                        item.Send(Encoding.Unicode.GetBytes(json));
+                    }
+                    Thread.Sleep(10);
                 }
-                isSend = false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("SendData(): " + ex.Message);
             }
         }
     }

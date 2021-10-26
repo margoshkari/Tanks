@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
 using System.Threading.Tasks;
 using TankDll;
 
@@ -56,34 +57,31 @@ namespace Client
             {
                 currentTank.tank.CoordY -= currentTank.tank.Speed;
                 currentTank.tank.Rotation = 0f;
+               
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 currentTank.tank.CoordY += currentTank.tank.Speed;
                 currentTank.tank.Rotation = 15.7f;
-
+                
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
                 currentTank.tank.CoordX -= currentTank.tank.Speed;
                 currentTank.tank.Rotation = -7.85f;
+               
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
                 currentTank.tank.CoordX += currentTank.tank.Speed;
                 currentTank.tank.Rotation = 7.85f;
+               
             }
 
-            if(isSend)
-            {
-                SendMsg();
-                isSend = false;
-            }
-            else
-            {
-                GetMsg();
-                isSend = true;
-            }
+            //Thread.Sleep(10);
+
+            SendMsg();
+            GetMsg();
            
             foreach (var item in tanks)
             {
@@ -97,7 +95,7 @@ namespace Client
             try
             {
                 string json = string.Empty;
-                json = Encoding.Unicode.GetString(clientData.GetMsg().ToArray());
+                json = clientData.GetMsg();
                 tanks = JsonSerializer.Deserialize<List<Tank>>(json);
             }
             catch (Exception ex) { }

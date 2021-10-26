@@ -29,37 +29,55 @@ namespace Server
             this.socketClient = socketClient;
             this.iPEndPoint = iPEndPoint;
         }
-        //public string GetMsg()
-        //{
-        //    int bytes = 0;
-        //    StringBuilder stringBuilder = new StringBuilder();
-        //    try
-        //    {
-        //        do
-        //        {
-        //            bytes = socketClient.Receive(data);
-        //            stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-        //        } while (socketClient.Available > 0);
-        //    }
-        //    catch (Exception ex) { }
-        //    return stringBuilder.ToString();
-        //}
-
-        public List<byte> GetMsg()
+        public string GetMsg()
         {
-            List<byte> List_data = new List<byte>();
             int bytes = 0;
-            byte[] array = new byte[255];
-            do
+            StringBuilder stringBuilder = new StringBuilder();
+            try
             {
-                bytes = socketClient.Receive(array, array.Length, 0);
-                for (int i = 0; i < bytes; i++)
+                do
                 {
-                    List_data.Add(array[i]);
-                }
-            } while (socketClient.Available > 0);
+                    bytes = socketClient.Receive(data);
+                    stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                } while (socketClient.Available > 0);
+            }
+            catch (Exception ex) { }
+            return stringBuilder.ToString();
 
-            return List_data;
         }
+
+        public string GetMsg(int index)
+        {
+            int bytes = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            try
+            {
+                do
+                {
+                    bytes = socketClientsList[index].Receive(data);
+                    stringBuilder.Append(Encoding.Unicode.GetString(data, 0, bytes));
+                } while (socketClientsList[index].Available > 0);
+            }
+            catch (Exception ex) { }
+            return stringBuilder.ToString();
+
+        }
+
+        //public List<byte> GetMsg()
+        //{
+        //    List<byte> List_data = new List<byte>();
+        //    int bytes = 0;
+        //    byte[] array = new byte[255];
+        //    do
+        //    {
+        //        bytes = socketClient.Receive(array, array.Length, 0);
+        //        for (int i = 0; i < bytes; i++)
+        //        {
+        //            List_data.Add(array[i]);
+        //        }
+        //    } while (socketClient.Available > 0);
+
+        //    return List_data;
+        //}
     }
 }
