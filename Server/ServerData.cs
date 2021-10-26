@@ -62,22 +62,5 @@ namespace Server
             return stringBuilder.ToString();
 
         }
-
-        //public List<byte> GetMsg()
-        //{
-        //    List<byte> List_data = new List<byte>();
-        //    int bytes = 0;
-        //    byte[] array = new byte[255];
-        //    do
-        //    {
-        //        bytes = socketClient.Receive(array, array.Length, 0);
-        //        for (int i = 0; i < bytes; i++)
-        //        {
-        //            List_data.Add(array[i]);
-        //        }
-        //    } while (socketClient.Available > 0);
-
-        //    return List_data;
-        //}
     }
 }

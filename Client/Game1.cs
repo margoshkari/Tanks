@@ -22,7 +22,6 @@ namespace Client
         private List<Tank> tanks;
         private List<Sprite> tankSprites;
         private Sprite currentTank;
-        static bool isSend = false;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -78,11 +77,9 @@ namespace Client
                
             }
 
-            //Thread.Sleep(10);
-
             SendMsg();
             GetMsg();
-          // 
+
             foreach (var item in tanks)
             {
                 tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), item));

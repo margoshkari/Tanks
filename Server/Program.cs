@@ -41,7 +41,6 @@ namespace Server
 
             Console.ReadLine();
         }
-        static int id = 0;
         static void Connect()
         {
             while (true)
@@ -49,36 +48,26 @@ namespace Server
                 serverData.socketClient = serverData.socket.Accept();
                 serverData.socketClientsList.Add(serverData.socketClient);
                 tanks.Add(new Tank());
-                tanks.Last().ID = id;
+                tanks.Last().ID = tanks.Count - 1;
 
-                tasks.Add(new Task(() =>
-                {
-                    Task.Factory.StartNew(() => GetTank());
-
-                }));
+                tasks.Add(new Task(() => GetTank()));
                 tasks.Last().Start();
-                id++;
 
-                Console.WriteLine("Client connected!");
+                Console.WriteLine($"Client { tanks.Last().ID} connected!");
             }
         }
         static void GetTank()
         {
             int index = 0;
-            if (tanks.Count > 0)
-            {
-                index = tanks.IndexOf(tanks.Last());
-            }
             string json = string.Empty;
+
+            if (tanks.Count > 0)
+                index = tanks.IndexOf(tanks.Last());
 
             while (true)
             {
                 try
                 {
-                    Console.WriteLine(serverData.socketClientsList.Count);
-
-                    serverData.socketClient = serverData.socketClientsList[index];
-
                     json = serverData.GetMsg(index);
                     tanks[index] = JsonSerializer.Deserialize<Tank>(json);
                 }
@@ -90,27 +79,22 @@ namespace Server
         }
         static void SendData()
         {
-
             string json = string.Empty;
             while (true)
             {
                 try
                 {
-                    if (serverData.socketClientsList.Count > 0)
+                    json = JsonSerializer.Serialize<List<Tank>>(tanks);
+                    foreach (var item in serverData.socketClientsList)
                     {
-                        json = JsonSerializer.Serialize<List<Tank>>(tanks);
-                        foreach (var item in serverData.socketClientsList)
-                        {
-                            item.Send(Encoding.Unicode.GetBytes(json));
-                        }
-                        Thread.Sleep(10);
+                        item.Send(Encoding.Unicode.GetBytes(json));
                     }
+                    Thread.Sleep(10);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-
             }
         }
     }
