@@ -29,9 +29,6 @@ namespace Server
 
                 Task.Factory.StartNew(() => Connect());
 
-                // TimerCallback timerCallback = new TimerCallback(SendData);
-                // Timer timer = new Timer(timerCallback, 0, 0, 16);
-
                 Task.Factory.StartNew(() => SendData());
             }
             catch (Exception ex)
@@ -58,11 +55,8 @@ namespace Server
         }
         static void GetTank()
         {
-            int index = 0;
+            int index = tanks.IndexOf(tanks.Last());
             string json = string.Empty;
-
-            if (tanks.Count > 0)
-                index = tanks.IndexOf(tanks.Last());
 
             while (true)
             {

@@ -54,27 +54,37 @@ namespace Client
 
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                currentTank.tank.CoordY -= currentTank.tank.Speed;
-                currentTank.tank.Rotation = 0f;
-               
+                if (currentTank.tank.CoordY - (currentTank.tank.Speed + currentTank.texture.Height / 2) > 0)
+                {
+                    currentTank.tank.CoordY -= currentTank.tank.Speed;
+                    currentTank.tank.Rotation = 0f;
+                }
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                currentTank.tank.CoordY += currentTank.tank.Speed;
-                currentTank.tank.Rotation = 15.7f;
-                
+                if (currentTank.tank.CoordY + (currentTank.tank.Speed + currentTank.texture.Height / 2) < _graphics.PreferredBackBufferHeight)
+                {
+                    currentTank.tank.CoordY += currentTank.tank.Speed;
+                    currentTank.tank.Rotation = 15.7f;
+                }
+
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                currentTank.tank.CoordX -= currentTank.tank.Speed;
-                currentTank.tank.Rotation = -7.85f;
-               
+                if (currentTank.tank.CoordX - (currentTank.tank.Speed + currentTank.texture.Height / 2) > 0)
+                {
+                    currentTank.tank.CoordX -= currentTank.tank.Speed;
+                    currentTank.tank.Rotation = -7.85f;
+                }
+
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                currentTank.tank.CoordX += currentTank.tank.Speed;
-                currentTank.tank.Rotation = 7.85f;
-               
+                if (currentTank.tank.CoordX + (currentTank.tank.Speed + currentTank.texture.Height / 2) < _graphics.PreferredBackBufferWidth)
+                {
+                    currentTank.tank.CoordX += currentTank.tank.Speed;
+                    currentTank.tank.Rotation = 7.85f;
+                }
             }
 
             SendMsg();
@@ -112,6 +122,7 @@ namespace Client
             foreach (var item in tankSprites)
             {
                 _spriteBatch.Draw(item.texture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.texture.Width, item.texture.Height), null, Color.White, item.tank.Rotation, new Vector2(item.texture.Width / 2f, item.texture.Height / 2f), SpriteEffects.None, 0f);
+
             }
             _spriteBatch.End();
 
