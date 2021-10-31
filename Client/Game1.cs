@@ -64,7 +64,7 @@ namespace Client
             }
 
             Move();
-
+           // TankDeath();
 
             base.Update(gameTime);
         }
@@ -101,7 +101,6 @@ namespace Client
         }
         private bool Collision(Rectangle rect)
         {
-            Rectangle currentObj = rect;
             List<Rectangle> allTanks = new List<Rectangle>();
 
             foreach (var item in tankSprites)
@@ -114,7 +113,7 @@ namespace Client
 
             foreach (var item in allTanks)
             {
-                if (currentObj.Intersects(item))
+                if (rect.Intersects(item))
                 {
                     return true;
                 }
@@ -169,13 +168,15 @@ namespace Client
                 currentTank.tank.bullet.CoordX = currentTank.tank.CoordX;
                 Task.Factory.StartNew(() =>
                 {
-                    lock(currentTank.tank.bullet)
+                    lock (currentTank.tank.bullet)
                     {
                         if (keys == Keys.W)
                         {
                             while (currentTank.tank.bullet.CoordY >= -10)
                             {
                                 currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
+                                if (BulletCollision())
+                                    break;
                                 Thread.Sleep(10);
                             }
                         }
@@ -184,6 +185,8 @@ namespace Client
                             while (currentTank.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10)
                             {
                                 currentTank.tank.bullet.CoordY += currentTank.tank.bullet.Speed;
+                                if (BulletCollision())
+                                    break;
                                 Thread.Sleep(10);
                             }
                         }
@@ -192,6 +195,8 @@ namespace Client
                             while (currentTank.tank.bullet.CoordX >= -10)
                             {
                                 currentTank.tank.bullet.CoordX -= currentTank.tank.bullet.Speed;
+                                if (BulletCollision())
+                                    break;
                                 Thread.Sleep(10);
                             }
                         }
@@ -200,6 +205,8 @@ namespace Client
                             while (currentTank.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10)
                             {
                                 currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
+                                if (BulletCollision())
+                                    break;
                                 Thread.Sleep(10);
                             }
                         }
@@ -207,5 +214,36 @@ namespace Client
                 });
             }
         }
+        private bool BulletCollision()
+        {
+            Rectangle bullet = new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, bulletTexture.Width, bulletTexture.Height);
+
+            foreach (var item in tankSprites)
+            {
+                if (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY)
+                {
+                    if (bullet.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.texture.Width, item.texture.Height)))
+                    {
+                        //item.tank.HP -= item.tank.Damage;
+                        currentTank.tank.bullet.CoordY = -10;
+                        currentTank.tank.bullet.CoordX = -10;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        //private void TankDeath()
+        //{
+        //    if (currentTank.tank.HP <= 0)
+        //    {
+        //        for (int i = 0; i < tankSprites.Count; i++)
+        //        {
+        //            if (tankSprites[i].tank.HP == currentTank.tank.HP)
+        //                tankSprites.Remove(tankSprites[i]);
+        //        }
+        //        clientData.socket.Disconnect(true);
+        //    }
+        //}
     }
 }
