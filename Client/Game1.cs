@@ -230,7 +230,7 @@ namespace Client
             {
                 if (keys == Keys.W)
                 {
-                    if (currentTank.tank.bullet.CoordY >= -10 && !BulletCollision())
+                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
                     {
                         currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
                     }
@@ -239,7 +239,7 @@ namespace Client
                 }
                 else if (keys == Keys.S)
                 {
-                    if (currentTank.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10 && !BulletCollision())
+                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
                     {
                         currentTank.tank.bullet.CoordY += currentTank.tank.bullet.Speed;
                     }
@@ -248,7 +248,7 @@ namespace Client
                 }
                 else if (keys == Keys.A)
                 {
-                    if (currentTank.tank.bullet.CoordX >= -10 && !BulletCollision())
+                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
                     {
                         currentTank.tank.bullet.CoordX -= currentTank.tank.bullet.Speed;
                     }
@@ -257,13 +257,18 @@ namespace Client
                 }
                 else if (keys == Keys.D)
                 {
-                    if (currentTank.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10 && !BulletCollision())
+                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
                     {
                         currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
                     }
                     else
                         currentTank.tank.bullet.isActive = false;
                 }
+            }
+            else
+            {
+                currentTank.tank.bullet.CoordY = -100;
+                currentTank.tank.bullet.CoordX = -100;
             }
         }
         private bool BulletCollision()
