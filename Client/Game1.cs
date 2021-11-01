@@ -22,7 +22,10 @@ namespace Client
         private List<Tank> tanks;
         private List<Sprite> tankSprites;
         private Sprite currentTank;
+        char[,] map = new char[20, 12];
+        private Map[,] wallSprites = new Map[20, 12];
         private Keys keys = Keys.W;
+        private Texture2D wallTexture;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -31,6 +34,24 @@ namespace Client
             clientData = new ClientData();
             tanks = new List<Tank>();
             tankSprites = new List<Sprite>();
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    if (i == 0 || j == 0 || j == map.GetLength(1) - 1 || i == map.GetLength(0) - 1)
+                        map[i, j] = '1';
+                }
+            }
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    if (map[i, j] == '1')
+                        wallSprites[i, j] = new Map(i * 40, j * 40, true);
+                    else
+                        wallSprites[i, j] = new Map(i * 40, j * 40, false);
+                }
+            }
         }
 
         protected override void Initialize()
@@ -43,6 +64,7 @@ namespace Client
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             currentTank = new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), new Tank());
+            wallTexture = Content.Load<Texture2D>(@"Textures\wall");
         }
 
         protected override void Update(GameTime gameTime)
@@ -92,6 +114,16 @@ namespace Client
                 _spriteBatch.Draw(item.bulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.bulletTexture.Width / 2f, item.bulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 _spriteBatch.Draw(item.tankTexture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.tankTexture.Width / 2f, item.tankTexture.Height / 2f), SpriteEffects.None, 0f);
             }
+            for (int i = 0; i < map.GetLength(0); i++)
+            {
+                for (int j = 0; j < map.GetLength(1); j++)
+                {
+                    if (wallSprites[i, j].IsWall)
+                    {
+                        _spriteBatch.Draw(wallTexture, new Rectangle(wallSprites[i, j].CoordX, wallSprites[i, j].CoordY, wallSprites[i, j].Width, wallSprites[i, j].Height), Color.White);
+                    }
+                }
+            }
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -111,26 +143,38 @@ namespace Client
 
             return false;
         }
-    
+        private bool WallCollision(Rectangle rect)
+        {
+            foreach (var item in wallSprites)
+            {
+                if (rect.Intersects(new Rectangle(item.CoordX, item.CoordY, item.Width, item.Height)) && item.IsWall)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         private void TankMove()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                if (currentTank.tank.CoordY - (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) > 0)
+                if (!WallCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY - currentTank.tank.Speed - currentTank.tankTexture.Height / 2,
+                        currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY - currentTank.tank.Speed,
                         currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                     {
                         currentTank.tank.CoordY -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = 0f;
-                        if(!currentTank.tank.bullet.isActive)
+                        if (!currentTank.tank.bullet.isActive)
                             keys = Keys.W;
                     }
                 }
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                if (currentTank.tank.CoordY + (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) < _graphics.PreferredBackBufferHeight)
+                if (!WallCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY + currentTank.tank.Speed - currentTank.tankTexture.Height / 2,
+                        currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY + currentTank.tank.Speed,
                            currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
@@ -144,7 +188,8 @@ namespace Client
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                if (currentTank.tank.CoordX - (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) > 0)
+                if (!WallCollision(new Rectangle(currentTank.tank.CoordX - currentTank.tank.Speed - currentTank.tankTexture.Height / 2, currentTank.tank.CoordY,
+                             currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX - currentTank.tank.Speed, currentTank.tank.CoordY,
                              currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
@@ -158,7 +203,8 @@ namespace Client
             }
             else if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                if (currentTank.tank.CoordX + (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) < _graphics.PreferredBackBufferWidth)
+                if (!WallCollision(new Rectangle(currentTank.tank.CoordX + currentTank.tank.Speed - currentTank.tankTexture.Height / 2, currentTank.tank.CoordY,
+                                currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX + currentTank.tank.Speed, currentTank.tank.CoordY,
                                 currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
@@ -180,11 +226,11 @@ namespace Client
                 currentTank.tank.bullet.Rotation = currentTank.tank.Rotation;
                 currentTank.tank.bullet.isActive = true;
             }
-            if(currentTank.tank.bullet.isActive)
+            if (currentTank.tank.bullet.isActive)
             {
                 if (keys == Keys.W)
                 {
-                    if(currentTank.tank.bullet.CoordY >= -10 && !BulletCollision())
+                    if (currentTank.tank.bullet.CoordY >= -10 && !BulletCollision())
                     {
                         currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
                     }
@@ -237,7 +283,7 @@ namespace Client
                     }
                 }
             }
-            if(currentTank.tank.HP <= 0)
+            if (currentTank.tank.HP <= 0)
             {
                 currentTank.tank.CoordX = 0;
                 currentTank.tank.CoordY = 0;

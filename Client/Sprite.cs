@@ -9,6 +9,7 @@ namespace Client
     {
         public Texture2D tankTexture { get; set; }
         public Texture2D bulletTexture { get; set; }
+      
         public Tank tank { get; set; }
         public Sprite(Texture2D tankTexture, Texture2D bulletTexture, Tank tank)
         {
