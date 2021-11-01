@@ -63,7 +63,6 @@ namespace Client
 
             TankMove();
             BulletMove();
-            // TankDeath();
 
             base.Update(gameTime);
         }
@@ -90,7 +89,7 @@ namespace Client
             _spriteBatch.Begin();
             foreach (var item in tankSprites)
             {
-                _spriteBatch.Draw(item.bulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.Rotation, new Vector2(item.bulletTexture.Width / 2f, item.bulletTexture.Height / 2f), SpriteEffects.None, 0f);
+                _spriteBatch.Draw(item.bulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.bulletTexture.Width / 2f, item.bulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 _spriteBatch.Draw(item.tankTexture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.tankTexture.Width / 2f, item.tankTexture.Height / 2f), SpriteEffects.None, 0f);
             }
             _spriteBatch.End();
@@ -124,7 +123,8 @@ namespace Client
                     {
                         currentTank.tank.CoordY -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = 0f;
-                        keys = Keys.W;
+                        if(!currentTank.tank.bullet.isActive)
+                            keys = Keys.W;
                     }
                 }
             }
@@ -137,7 +137,8 @@ namespace Client
                     {
                         currentTank.tank.CoordY += currentTank.tank.Speed;
                         currentTank.tank.Rotation = 15.7f;
-                        keys = Keys.S;
+                        if (!currentTank.tank.bullet.isActive)
+                            keys = Keys.S;
                     }
                 }
             }
@@ -150,7 +151,8 @@ namespace Client
                     {
                         currentTank.tank.CoordX -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = -7.85f;
-                        keys = Keys.A;
+                        if (!currentTank.tank.bullet.isActive)
+                            keys = Keys.A;
                     }
                 }
             }
@@ -163,7 +165,8 @@ namespace Client
                     {
                         currentTank.tank.CoordX += currentTank.tank.Speed;
                         currentTank.tank.Rotation = 7.85f;
-                        keys = Keys.D;
+                        if (!currentTank.tank.bullet.isActive)
+                            keys = Keys.D;
                     }
                 }
             }
@@ -174,52 +177,47 @@ namespace Client
             {
                 currentTank.tank.bullet.CoordY = currentTank.tank.CoordY;
                 currentTank.tank.bullet.CoordX = currentTank.tank.CoordX;
-                Task.Factory.StartNew(() =>
+                currentTank.tank.bullet.Rotation = currentTank.tank.Rotation;
+                currentTank.tank.bullet.isActive = true;
+            }
+            if(currentTank.tank.bullet.isActive)
+            {
+                if (keys == Keys.W)
                 {
-                    lock (currentTank.tank.bullet)
+                    if(currentTank.tank.bullet.CoordY >= -10 && !BulletCollision())
                     {
-                        if (keys == Keys.W)
-                        {
-                            while (currentTank.tank.bullet.CoordY >= -10)
-                            {
-                                currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
-                                if (BulletCollision())
-                                    break;
-                                Thread.Sleep(10);
-                            }
-                        }
-                        else if (keys == Keys.S)
-                        {
-                            while (currentTank.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10)
-                            {
-                                currentTank.tank.bullet.CoordY += currentTank.tank.bullet.Speed;
-                                if (BulletCollision())
-                                    break;
-                                Thread.Sleep(10);
-                            }
-                        }
-                        else if (keys == Keys.A)
-                        {
-                            while (currentTank.tank.bullet.CoordX >= -10)
-                            {
-                                currentTank.tank.bullet.CoordX -= currentTank.tank.bullet.Speed;
-                                if (BulletCollision())
-                                    break;
-                                Thread.Sleep(10);
-                            }
-                        }
-                        else if (keys == Keys.D)
-                        {
-                            while (currentTank.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10)
-                            {
-                                currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
-                                if (BulletCollision())
-                                    break;
-                                Thread.Sleep(10);
-                            }
-                        }
+                        currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
                     }
-                });
+                    else
+                        currentTank.tank.bullet.isActive = false;
+                }
+                else if (keys == Keys.S)
+                {
+                    if (currentTank.tank.bullet.CoordY <= _graphics.PreferredBackBufferHeight + 10 && !BulletCollision())
+                    {
+                        currentTank.tank.bullet.CoordY += currentTank.tank.bullet.Speed;
+                    }
+                    else
+                        currentTank.tank.bullet.isActive = false;
+                }
+                else if (keys == Keys.A)
+                {
+                    if (currentTank.tank.bullet.CoordX >= -10 && !BulletCollision())
+                    {
+                        currentTank.tank.bullet.CoordX -= currentTank.tank.bullet.Speed;
+                    }
+                    else
+                        currentTank.tank.bullet.isActive = false;
+                }
+                else if (keys == Keys.D)
+                {
+                    if (currentTank.tank.bullet.CoordX <= _graphics.PreferredBackBufferWidth + 10 && !BulletCollision())
+                    {
+                        currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
+                    }
+                    else
+                        currentTank.tank.bullet.isActive = false;
+                }
             }
         }
         private bool BulletCollision()
@@ -230,7 +228,7 @@ namespace Client
             {
                 if (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY)
                 {
-                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
+                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height)))
                     {
                         currentTank.tank.HP -= currentTank.tank.Damage;
                         item.tank.bullet.CoordY = -10;
@@ -247,17 +245,5 @@ namespace Client
 
             return false;
         }
-        //private void TankDeath()
-        //{
-        //    if (currentTank.tank.HP <= 0)
-        //    {
-        //        for (int i = 0; i < tankSprites.Count; i++)
-        //        {
-        //            if (tankSprites[i].tank.HP == currentTank.tank.HP)
-        //                tankSprites.Remove(tankSprites[i]);
-        //        }
-        //        clientData.socket.Disconnect(true);
-        //    }
-        //}
     }
 }
