@@ -57,17 +57,29 @@ namespace Server
         {
             int index = tanks.IndexOf(tanks.Last());
             string json = string.Empty;
+            bool isConnected = true;
 
-            while (true)
+            while (isConnected)
             {
                 try
                 {
-                    json = serverData.GetMsg(index);
-                    tanks[index] = JsonSerializer.Deserialize<Tank>(json);
+                    if (index >= serverData.socketClientsList.Count)
+                        index--;
+                    if (serverData.socketClientsList[index].Connected)
+                    {
+                        json = serverData.GetMsg(index);
+                        tanks[index] = JsonSerializer.Deserialize<Tank>(json);
+                    }
+                    else
+                    {
+                        isConnected = false;
+                        tanks.RemoveAt(index);
+                        serverData.socketClientsList.RemoveAt(index);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("GetTank(): " + ex.Message);
                 }
             }
         }
@@ -81,13 +93,17 @@ namespace Server
                     json = JsonSerializer.Serialize<List<Tank>>(tanks);
                     foreach (var item in serverData.socketClientsList)
                     {
-                        item.Send(Encoding.Unicode.GetBytes(json));
+                        if (item.Connected)
+                        {
+                            item.Send(Encoding.Unicode.GetBytes(json));
+                        }
+
                     }
                     Thread.Sleep(10);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("SendData(): " + ex.Message);
                 }
             }
         }

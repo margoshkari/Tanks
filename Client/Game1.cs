@@ -22,7 +22,7 @@ namespace Client
         private List<Tank> tanks;
         private List<Sprite> tankSprites;
         private Sprite currentTank;
-        private Texture2D bulletTexture;
+        private Keys keys = Keys.W;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -42,9 +42,7 @@ namespace Client
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            currentTank = new Sprite(Content.Load<Texture2D>(@"Textures\tank"), new Tank());
-            bulletTexture = Content.Load<Texture2D>(@"Textures\bullet");
-
+            currentTank = new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), new Tank());
         }
 
         protected override void Update(GameTime gameTime)
@@ -60,12 +58,12 @@ namespace Client
 
             foreach (var item in tanks)
             {
-                tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), item));
+                tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), item));
             }
 
             TankMove();
             BulletMove();
-           // TankDeath();
+            // TankDeath();
 
             base.Update(gameTime);
         }
@@ -85,7 +83,6 @@ namespace Client
             json = JsonSerializer.Serialize<Tank>(currentTank.tank);
             clientData.socket.Send(Encoding.Unicode.GetBytes(json));
         }
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -93,8 +90,8 @@ namespace Client
             _spriteBatch.Begin();
             foreach (var item in tankSprites)
             {
-                _spriteBatch.Draw(bulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.Rotation, new Vector2(bulletTexture.Width / 2f, bulletTexture.Height / 2f), SpriteEffects.None, 0f);
-                _spriteBatch.Draw(item.texture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.texture.Width, item.texture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.texture.Width / 2f, item.texture.Height / 2f), SpriteEffects.None, 0f);
+                _spriteBatch.Draw(item.bulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20), null, Color.White, item.tank.Rotation, new Vector2(item.bulletTexture.Width / 2f, item.bulletTexture.Height / 2f), SpriteEffects.None, 0f);
+                _spriteBatch.Draw(item.tankTexture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.tankTexture.Width / 2f, item.tankTexture.Height / 2f), SpriteEffects.None, 0f);
             }
             _spriteBatch.End();
 
@@ -106,7 +103,7 @@ namespace Client
             {
                 if (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY)
                 {
-                    if (rect.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.texture.Width, item.texture.Height)))
+                    if (rect.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height)))
                     {
                         return true;
                     }
@@ -115,15 +112,15 @@ namespace Client
 
             return false;
         }
-        private Keys keys = Keys.W;
+    
         private void TankMove()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-                if (currentTank.tank.CoordY - (currentTank.tank.Speed + currentTank.texture.Height / 2) > 0)
+                if (currentTank.tank.CoordY - (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) > 0)
                 {
-                    if(!TankCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY - currentTank.tank.Speed, 
-                        currentTank.texture.Height, currentTank.texture.Width)))
+                    if (!TankCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY - currentTank.tank.Speed,
+                        currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                     {
                         currentTank.tank.CoordY -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = 0f;
@@ -131,12 +128,12 @@ namespace Client
                     }
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            else if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                if (currentTank.tank.CoordY + (currentTank.tank.Speed + currentTank.texture.Height / 2) < _graphics.PreferredBackBufferHeight)
+                if (currentTank.tank.CoordY + (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) < _graphics.PreferredBackBufferHeight)
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY + currentTank.tank.Speed,
-                           currentTank.texture.Height, currentTank.texture.Width)))
+                           currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                     {
                         currentTank.tank.CoordY += currentTank.tank.Speed;
                         currentTank.tank.Rotation = 15.7f;
@@ -144,12 +141,12 @@ namespace Client
                     }
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            else if (Keyboard.GetState().IsKeyDown(Keys.A))
             {
-                if (currentTank.tank.CoordX - (currentTank.tank.Speed + currentTank.texture.Height / 2) > 0)
+                if (currentTank.tank.CoordX - (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) > 0)
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX - currentTank.tank.Speed, currentTank.tank.CoordY,
-                             currentTank.texture.Height, currentTank.texture.Width)))
+                             currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                     {
                         currentTank.tank.CoordX -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = -7.85f;
@@ -157,12 +154,12 @@ namespace Client
                     }
                 }
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
+            else if (Keyboard.GetState().IsKeyDown(Keys.D))
             {
-                if (currentTank.tank.CoordX + (currentTank.tank.Speed + currentTank.texture.Height / 2) < _graphics.PreferredBackBufferWidth)
+                if (currentTank.tank.CoordX + (currentTank.tank.Speed + currentTank.tankTexture.Height / 2) < _graphics.PreferredBackBufferWidth)
                 {
                     if (!TankCollision(new Rectangle(currentTank.tank.CoordX + currentTank.tank.Speed, currentTank.tank.CoordY,
-                                currentTank.texture.Height, currentTank.texture.Width)))
+                                currentTank.tankTexture.Height, currentTank.tankTexture.Width)))
                     {
                         currentTank.tank.CoordX += currentTank.tank.Speed;
                         currentTank.tank.Rotation = 7.85f;
@@ -227,21 +224,27 @@ namespace Client
         }
         private bool BulletCollision()
         {
-            Rectangle bullet = new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, bulletTexture.Width, bulletTexture.Height);
+            Rectangle tank = new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY, currentTank.tankTexture.Width, currentTank.tankTexture.Height);
 
             foreach (var item in tankSprites)
             {
                 if (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY)
                 {
-                    if (bullet.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.texture.Width, item.texture.Height)))
+                    if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, 20, 20)))
                     {
-                        //item.tank.HP -= item.tank.Damage;
-                        currentTank.tank.bullet.CoordY = -10;
-                        currentTank.tank.bullet.CoordX = -10;
+                        currentTank.tank.HP -= currentTank.tank.Damage;
+                        item.tank.bullet.CoordY = -10;
+                        item.tank.bullet.CoordX = -10;
                         return true;
                     }
                 }
             }
+            if(currentTank.tank.HP <= 0)
+            {
+                currentTank.tank.CoordX = 0;
+                currentTank.tank.CoordY = 0;
+            }
+
             return false;
         }
         //private void TankDeath()
