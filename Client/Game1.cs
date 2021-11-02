@@ -77,7 +77,12 @@ namespace Client
 
             SendMsg();
             GetMsg();
-
+            if (currentTank.tank.ID == 0 && tanks.Count > 0)
+            {
+                currentTank.tank.ID = tanks.IndexOf(tanks.Last()) + 1;
+                Window.Title = currentTank.tank.ID.ToString();
+            }
+               
             foreach (var item in tanks)
             {
                 tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), item));
@@ -132,7 +137,7 @@ namespace Client
         {
             foreach (var item in tankSprites)
             {
-                if (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY)
+                if (item.tank.ID != currentTank.tank.ID)
                 {
                     if (rect.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height)))
                     {
@@ -154,7 +159,7 @@ namespace Client
             }
             return false;
         }
-        private void TankMove()
+        private void TankMove() 
         {
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
@@ -228,42 +233,27 @@ namespace Client
             }
             if (currentTank.tank.bullet.isActive)
             {
-                if (keys == Keys.W)
+                if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
                 {
-                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
+                    if (keys == Keys.W)
                     {
                         currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
                     }
-                    else
-                        currentTank.tank.bullet.isActive = false;
-                }
-                else if (keys == Keys.S)
-                {
-                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
+                    else if (keys == Keys.S)
                     {
                         currentTank.tank.bullet.CoordY += currentTank.tank.bullet.Speed;
                     }
-                    else
-                        currentTank.tank.bullet.isActive = false;
-                }
-                else if (keys == Keys.A)
-                {
-                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
+                    else if (keys == Keys.A)
                     {
                         currentTank.tank.bullet.CoordX -= currentTank.tank.bullet.Speed;
                     }
-                    else
-                        currentTank.tank.bullet.isActive = false;
-                }
-                else if (keys == Keys.D)
-                {
-                    if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
+                    else if (keys == Keys.D)
                     {
                         currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
                     }
-                    else
-                        currentTank.tank.bullet.isActive = false;
                 }
+                else
+                    currentTank.tank.bullet.isActive = false;
             }
             else
             {
@@ -277,7 +267,7 @@ namespace Client
 
             foreach (var item in tankSprites)
             {
-                if (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY)
+                if (item.tank.ID != currentTank.tank.ID)
                 {
                     if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height)))
                     {

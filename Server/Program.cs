@@ -45,7 +45,6 @@ namespace Server
                 serverData.socketClient = serverData.socket.Accept();
                 serverData.socketClientsList.Add(serverData.socketClient);
                 tanks.Add(new Tank());
-                tanks.Last().ID = tanks.Count - 1;
 
                 tasks.Add(new Task(() => GetTank()));
                 tasks.Last().Start();
@@ -69,6 +68,7 @@ namespace Server
                     {
                         json = serverData.GetMsg(index);
                         tanks[index] = JsonSerializer.Deserialize<Tank>(json);
+                        tanks[index].ID = index + 1;
                     }
                     else
                     {
