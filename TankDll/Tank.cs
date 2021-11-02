@@ -13,6 +13,7 @@ namespace TankDll
         public int[] Color { get; set; }
         public float Rotation { get; set; }
         public Bullet bullet { get; set; }
+        public Direction dir { get; set; }
         public Tank()
         {
             Random rand = new Random();
@@ -24,6 +25,7 @@ namespace TankDll
             Rotation = 0f;
             HP = 100;
             Damage = 20;
+            dir = Direction.Up;
         }
     }
 }

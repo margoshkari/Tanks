@@ -13,6 +13,7 @@ namespace TankDll
         public int Height { get; set; }
         public bool isActive { get; set; }
         public float Rotation { get; set; }
+        public Direction dir { get; set; }
         public Bullet()
         {
             Random rand = new Random();
@@ -23,6 +24,7 @@ namespace TankDll
             Height = 20;
             isActive = false;
             Rotation = 0f;
+            dir = Direction.Up;
         }
     }
 }

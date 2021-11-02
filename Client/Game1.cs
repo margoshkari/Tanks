@@ -24,7 +24,6 @@ namespace Client
         private Sprite currentTank;
         char[,] map = new char[20, 12];
         private Map[,] wallSprites = new Map[20, 12];
-        private Keys keys = Keys.W;
         private Texture2D wallTexture;
         public Game1()
         {
@@ -82,7 +81,7 @@ namespace Client
                 currentTank.tank.ID = tanks.Last().ID;
             }
 
-            Window.Title = currentTank.tank.ID.ToString();
+            Window.Title = currentTank.tank.HP.ToString();
 
             foreach (var item in tanks)
             {
@@ -172,8 +171,7 @@ namespace Client
                     {
                         currentTank.tank.CoordY -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = 0f;
-                        if (!currentTank.tank.bullet.isActive)
-                            keys = Keys.W;
+                        currentTank.tank.dir = Direction.Up;
                     }
                 }
             }
@@ -187,8 +185,7 @@ namespace Client
                     {
                         currentTank.tank.CoordY += currentTank.tank.Speed;
                         currentTank.tank.Rotation = 15.7f;
-                        if (!currentTank.tank.bullet.isActive)
-                            keys = Keys.S;
+                        currentTank.tank.dir = Direction.Down;
                     }
                 }
             }
@@ -202,8 +199,7 @@ namespace Client
                     {
                         currentTank.tank.CoordX -= currentTank.tank.Speed;
                         currentTank.tank.Rotation = -7.85f;
-                        if (!currentTank.tank.bullet.isActive)
-                            keys = Keys.A;
+                        currentTank.tank.dir = Direction.Left;
                     }
                 }
             }
@@ -217,8 +213,7 @@ namespace Client
                     {
                         currentTank.tank.CoordX += currentTank.tank.Speed;
                         currentTank.tank.Rotation = 7.85f;
-                        if (!currentTank.tank.bullet.isActive)
-                            keys = Keys.D;
+                        currentTank.tank.dir = Direction.Right;
                     }
                 }
             }
@@ -230,6 +225,7 @@ namespace Client
                 currentTank.tank.bullet.CoordY = currentTank.tank.CoordY;
                 currentTank.tank.bullet.CoordX = currentTank.tank.CoordX;
                 currentTank.tank.bullet.Rotation = currentTank.tank.Rotation;
+                currentTank.tank.bullet.dir = currentTank.tank.dir;
                 currentTank.tank.bullet.isActive = true;
             }
             if (currentTank.tank.bullet.isActive)
@@ -237,19 +233,19 @@ namespace Client
                 BulletCollision();
                 if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)))
                 {
-                    if (keys == Keys.W)
+                    if (currentTank.tank.bullet.dir == Direction.Up)
                     {
                         currentTank.tank.bullet.CoordY -= currentTank.tank.bullet.Speed;
                     }
-                    else if (keys == Keys.S)
+                    else if (currentTank.tank.bullet.dir == Direction.Down)
                     {
                         currentTank.tank.bullet.CoordY += currentTank.tank.bullet.Speed;
                     }
-                    else if (keys == Keys.A)
+                    else if (currentTank.tank.bullet.dir == Direction.Left)
                     {
                         currentTank.tank.bullet.CoordX -= currentTank.tank.bullet.Speed;
                     }
-                    else if (keys == Keys.D)
+                    else if (currentTank.tank.bullet.dir == Direction.Right)
                     {
                         currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
                     }
