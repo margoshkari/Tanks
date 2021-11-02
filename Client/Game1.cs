@@ -80,9 +80,10 @@ namespace Client
             if (currentTank.tank.ID == 0 && tanks.Count > 0)
             {
                 currentTank.tank.ID = tanks.IndexOf(tanks.Last()) + 1;
-                Window.Title = currentTank.tank.ID.ToString();
             }
-               
+
+            Window.Title = currentTank.tank.HP.ToString();
+
             foreach (var item in tanks)
             {
                 tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), item));
@@ -159,7 +160,7 @@ namespace Client
             }
             return false;
         }
-        private void TankMove() 
+        private void TankMove()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
@@ -233,7 +234,8 @@ namespace Client
             }
             if (currentTank.tank.bullet.isActive)
             {
-                if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)) && !BulletCollision())
+                BulletCollision();
+                if (!WallCollision(new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Height, currentTank.tank.bullet.Width)))
                 {
                     if (keys == Keys.W)
                     {
@@ -251,6 +253,7 @@ namespace Client
                     {
                         currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
                     }
+                    
                 }
                 else
                     currentTank.tank.bullet.isActive = false;
@@ -261,7 +264,7 @@ namespace Client
                 currentTank.tank.bullet.CoordX = -100;
             }
         }
-        private bool BulletCollision()
+        private void BulletCollision()
         {
             Rectangle tank = new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY, currentTank.tankTexture.Width, currentTank.tankTexture.Height);
 
@@ -272,19 +275,27 @@ namespace Client
                     if (tank.Intersects(new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height)))
                     {
                         currentTank.tank.HP -= currentTank.tank.Damage;
-                        item.tank.bullet.CoordY = -10;
-                        item.tank.bullet.CoordX = -10;
-                        return true;
                     }
                 }
             }
             if (currentTank.tank.HP <= 0)
             {
-                currentTank.tank.CoordX = 0;
-                currentTank.tank.CoordY = 0;
+                currentTank.tank.CoordX = -100;
+                currentTank.tank.CoordY = -100;
             }
 
-            return false;
+            Rectangle bullet = new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Width, currentTank.tank.bullet.Height);
+            foreach (var item in tankSprites)
+            {
+                if (item.tank.ID != currentTank.tank.ID && currentTank.tank.bullet.isActive)
+                {
+                    if (bullet.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height)))
+                    {
+                        currentTank.tank.bullet.CoordY = -200;
+                        currentTank.tank.bullet.CoordX = -200;
+                    }
+                }
+            }
         }
     }
 }

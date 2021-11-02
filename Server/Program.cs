@@ -68,7 +68,9 @@ namespace Server
                     {
                         json = serverData.GetMsg(index);
                         tanks[index] = JsonSerializer.Deserialize<Tank>(json);
+
                         tanks[index].ID = index + 1;
+
                     }
                     else
                     {
