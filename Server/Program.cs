@@ -19,6 +19,7 @@ namespace Server
         static List<Tank> tanks = new List<Tank>();
         static bool isSend = true;
         static List<Task> tasks = new List<Task>();
+        static int ID = 0;
         static void Main(string[] args)
         {
             Console.WriteLine("Start server...");
@@ -45,6 +46,7 @@ namespace Server
                 serverData.socketClient = serverData.socket.Accept();
                 serverData.socketClientsList.Add(serverData.socketClient);
                 tanks.Add(new Tank());
+                ID++;
 
                 tasks.Add(new Task(() => GetTank()));
                 tasks.Last().Start();
@@ -54,7 +56,8 @@ namespace Server
         }
         static void GetTank()
         {
-            int index = tanks.IndexOf(tanks.Last());
+            int index = ID;
+            int id = ID;
             string json = string.Empty;
             bool isConnected = true;
 
@@ -69,7 +72,7 @@ namespace Server
                         json = serverData.GetMsg(index);
                         tanks[index] = JsonSerializer.Deserialize<Tank>(json);
 
-                        tanks[index].ID = index + 1;
+                        tanks[index].ID = id;
 
                     }
                     else

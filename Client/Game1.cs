@@ -79,10 +79,10 @@ namespace Client
             GetMsg();
             if (currentTank.tank.ID == 0 && tanks.Count > 0)
             {
-                currentTank.tank.ID = tanks.IndexOf(tanks.Last()) + 1;
+                currentTank.tank.ID = tanks.Last().ID;
             }
 
-            Window.Title = currentTank.tank.HP.ToString();
+            Window.Title = currentTank.tank.ID.ToString();
 
             foreach (var item in tanks)
             {
