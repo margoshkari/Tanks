@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
@@ -17,7 +13,6 @@ namespace Server
     {
         static ServerData serverData = new ServerData();
         static List<Tank> tanks = new List<Tank>();
-        static bool isSend = true;
         static List<Task> tasks = new List<Task>();
         static int ID = 0;
         static void Main(string[] args)

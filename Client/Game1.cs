@@ -6,9 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
 using TankDll;
 
 
@@ -22,7 +19,6 @@ namespace Client
         private List<Tank> tanks;
         private List<Sprite> tankSprites;
         private Sprite currentTank;
-        char[,] map = new char[20, 12];
         private Map[,] wallSprites = new Map[20, 12];
         private Texture2D wallTexture;
         public Game1()
@@ -33,24 +29,7 @@ namespace Client
             clientData = new ClientData();
             tanks = new List<Tank>();
             tankSprites = new List<Sprite>();
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                for (int j = 0; j < map.GetLength(1); j++)
-                {
-                    if (i == 0 || j == 0 || j == map.GetLength(1) - 1 || i == map.GetLength(0) - 1)
-                        map[i, j] = '1';
-                }
-            }
-            for (int i = 0; i < map.GetLength(0); i++)
-            {
-                for (int j = 0; j < map.GetLength(1); j++)
-                {
-                    if (map[i, j] == '1')
-                        wallSprites[i, j] = new Map(i * 40, j * 40, true);
-                    else
-                        wallSprites[i, j] = new Map(i * 40, j * 40, false);
-                }
-            }
+            CreateMap();
         }
 
         protected override void Initialize()
@@ -119,9 +98,9 @@ namespace Client
                 _spriteBatch.Draw(item.bulletTexture, new Rectangle(item.tank.bullet.CoordX, item.tank.bullet.CoordY, item.tank.bullet.Width, item.tank.bullet.Height), null, Color.White, item.tank.bullet.Rotation, new Vector2(item.bulletTexture.Width / 2f, item.bulletTexture.Height / 2f), SpriteEffects.None, 0f);
                 _spriteBatch.Draw(item.tankTexture, new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height), null, new Color(item.tank.Color[0], item.tank.Color[1], item.tank.Color[2]), item.tank.Rotation, new Vector2(item.tankTexture.Width / 2f, item.tankTexture.Height / 2f), SpriteEffects.None, 0f);
             }
-            for (int i = 0; i < map.GetLength(0); i++)
+            for (int i = 0; i < wallSprites.GetLength(0); i++)
             {
-                for (int j = 0; j < map.GetLength(1); j++)
+                for (int j = 0; j < wallSprites.GetLength(1); j++)
                 {
                     if (wallSprites[i, j].IsWall)
                     {
@@ -220,7 +199,7 @@ namespace Client
         }
         private void BulletMove()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && !currentTank.tank.bullet.isActive)
             {
                 currentTank.tank.bullet.CoordY = currentTank.tank.CoordY;
                 currentTank.tank.bullet.CoordX = currentTank.tank.CoordX;
@@ -290,6 +269,19 @@ namespace Client
                         currentTank.tank.bullet.CoordY = -200;
                         currentTank.tank.bullet.CoordX = -200;
                     }
+                }
+            }
+        }
+        private void CreateMap()
+        {
+            for (int i = 0; i < wallSprites.GetLength(0); i++)
+            {
+                for (int j = 0; j < wallSprites.GetLength(1); j++)
+                {
+                    if (i == 0 || j == 0 || j == wallSprites.GetLength(1) - 1 || i == wallSprites.GetLength(0) - 1)
+                        wallSprites[i, j] = new Map(i * 40, j * 40, true);
+                    else
+                        wallSprites[i, j] = new Map(i * 40, j * 40, false);
                 }
             }
         }
