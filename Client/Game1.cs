@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
@@ -21,6 +22,7 @@ namespace Client
         private Sprite currentTank;
         private Map[,] wallSprites = new Map[20, 12];
         private Texture2D wallTexture;
+        private int[] color = new int[3];
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -41,6 +43,7 @@ namespace Client
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+
             currentTank = new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), new Tank());
             wallTexture = Content.Load<Texture2D>(@"Textures\wall");
         }
@@ -58,6 +61,10 @@ namespace Client
             if (currentTank.tank.ID == 0 && tanks.Count > 0)
             {
                 currentTank.tank.ID = tanks.Last().ID;
+                if (GetColor())
+                    currentTank.tank.Color = this.color;
+                else
+                    SaveColor();
             }
 
             Window.Title = currentTank.tank.HP.ToString();
@@ -228,7 +235,7 @@ namespace Client
                     {
                         currentTank.tank.bullet.CoordX += currentTank.tank.bullet.Speed;
                     }
-                    
+
                 }
                 else
                     currentTank.tank.bullet.isActive = false;
@@ -284,6 +291,25 @@ namespace Client
                         wallSprites[i, j] = new Map(i * 40, j * 40, false);
                 }
             }
+        }
+
+        public void SaveColor()
+        {
+            if (!Directory.Exists(@"C:\ProgramData\Tanks"))
+                Directory.CreateDirectory(@"C:\ProgramData\Tanks");
+            if (!File.Exists(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt"))
+                File.WriteAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt", $"{currentTank.tank.Color[0]}:{currentTank.tank.Color[1]}:{currentTank.tank.Color[2]}");
+        }
+        public bool GetColor()
+        {
+            if (File.Exists(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt"))
+            {
+                this.color[0] = int.Parse(File.ReadAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt").Split(":")[0]);
+                this.color[1] = int.Parse(File.ReadAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt").Split(":")[1]);
+                this.color[2] = int.Parse(File.ReadAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt").Split(":")[2]);
+                return true;
+            }
+            return false;
         }
     }
 }
