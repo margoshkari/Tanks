@@ -19,7 +19,7 @@ namespace Client
         private List<Tank> tanks;
         private List<Sprite> tankSprites;
         private Sprite currentTank;
-        private Map[,] wallSprites = new Map[20, 12];
+        private Map[,] wallSprites = new Map[12, 20];
         private Texture2D wallTexture;
         private int[] color = new int[3];
         private SpriteFont font;
@@ -31,13 +31,13 @@ namespace Client
             clientData = new ClientData();
             tanks = new List<Tank>();
             tankSprites = new List<Sprite>();
-            CreateMap();
         }
 
         protected override void Initialize()
         {
             clientData.socket.Connect(clientData.iPEndPoint);
             base.Initialize();
+            CreateMap();
         }
 
         protected override void LoadContent()
@@ -288,18 +288,17 @@ namespace Client
         }
         private void CreateMap()
         {
-            for (int i = 0; i < wallSprites.GetLength(0); i++)
+            for (int i = 0; i < MapCreation.map.GetLength(0); i++)
             {
-                for (int j = 0; j < wallSprites.GetLength(1); j++)
+                for (int j = 0; j < MapCreation.map.GetLength(1); j++)
                 {
-                    if (i == 0 || j == 0 || j == wallSprites.GetLength(1) - 1 || i == wallSprites.GetLength(0) - 1)
-                        wallSprites[i, j] = new Map(i * 40, j * 40, true);
+                    if (MapCreation.map[i, j] == 'X')
+                        wallSprites[i, j] = new Map(j * 40, i * 40, true);
                     else
-                        wallSprites[i, j] = new Map(i * 40, j * 40, false);
+                        wallSprites[i, j] = new Map(j * 40, i * 40, false);
                 }
             }
         }
-
         public void SaveColor()
         {
             if (!Directory.Exists(@"C:\ProgramData\Tanks"))

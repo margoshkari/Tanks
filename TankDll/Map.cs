@@ -1,8 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+﻿
 
-namespace Client
+namespace TankDll
 {
     public class Map
     {
