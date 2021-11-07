@@ -9,7 +9,6 @@ using System.Text;
 using System.Text.Json;
 using TankDll;
 
-
 namespace Client
 {
     public class Game1 : Game
@@ -23,6 +22,7 @@ namespace Client
         private Map[,] wallSprites = new Map[20, 12];
         private Texture2D wallTexture;
         private int[] color = new int[3];
+        private SpriteFont font;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -46,6 +46,7 @@ namespace Client
 
             currentTank = new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), new Tank());
             wallTexture = Content.Load<Texture2D>(@"Textures\wall");
+            font = Content.Load<SpriteFont>("font");
         }
 
         protected override void Update(GameTime gameTime)
@@ -67,7 +68,7 @@ namespace Client
                     SaveColor();
             }
 
-            Window.Title = currentTank.tank.HP.ToString();
+            Window.Title = currentTank.tank.ID.ToString();
 
             foreach (var item in tanks)
             {
@@ -76,6 +77,7 @@ namespace Client
 
             TankMove();
             BulletMove();
+            TankDeath();
 
             base.Update(gameTime);
         }
@@ -115,6 +117,7 @@ namespace Client
                     }
                 }
             }
+            _spriteBatch.DrawString(font, currentTank.tank.HP.ToString(), new Vector2(currentTank.tank.CoordX - 10, currentTank.tank.CoordY - 50), Color.White);
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -246,7 +249,7 @@ namespace Client
                 currentTank.tank.bullet.CoordX = -100;
             }
         }
-        private void BulletCollision()
+        private void TankDeath()
         {
             Rectangle tank = new Rectangle(currentTank.tank.CoordX, currentTank.tank.CoordY, currentTank.tankTexture.Width, currentTank.tankTexture.Height);
 
@@ -265,7 +268,9 @@ namespace Client
                 currentTank.tank.CoordX = -100;
                 currentTank.tank.CoordY = -100;
             }
-
+        }
+        private void BulletCollision()
+        {
             Rectangle bullet = new Rectangle(currentTank.tank.bullet.CoordX, currentTank.tank.bullet.CoordY, currentTank.tank.bullet.Width, currentTank.tank.bullet.Height);
             foreach (var item in tankSprites)
             {
@@ -275,9 +280,11 @@ namespace Client
                     {
                         currentTank.tank.bullet.CoordY = -200;
                         currentTank.tank.bullet.CoordX = -200;
+                        currentTank.tank.bullet.isActive = false;
                     }
                 }
             }
+
         }
         private void CreateMap()
         {

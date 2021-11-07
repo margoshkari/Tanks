@@ -49,3 +49,10 @@
 /processorParam:TextureFormat=Color
 /build:Textures/wall.png
 
+#begin font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:font.spritefont
+
