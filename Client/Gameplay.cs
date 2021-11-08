@@ -107,7 +107,8 @@ namespace Client
         {
             foreach (var item in tankSprites)
             {
-                if (item.tank.ID != currentTank.tank.ID)
+                if (item.tank.ID != currentTank.tank.ID && 
+                    (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY))
                 {
                     if (rect.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height)))
                     {
@@ -264,6 +265,7 @@ namespace Client
                         currentTank.tank.bullet.isActive = false;
                         if (item.tank.HP - currentTank.tank.Damage <= 0)
                             currentTank.tank.Score++;
+                        break;
                     }
                 }
             }
