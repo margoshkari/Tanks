@@ -37,7 +37,11 @@ namespace Client
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
+            {
+                gameplay.SaveData();
                 Exit();
+            }
+                
 
             if (gameplay.isActive)
                 gameplay.Update();
@@ -57,7 +61,7 @@ namespace Client
                 menu.ratingButton.isClick = false;
                 rating.currentScore = gameplay.currentTank.tank.Score;
             }
-            Window.Title = gameplay.currentTank.tank.Score.ToString();
+            Window.Title = gameplay.currentTank.tank.ID.ToString();
 
             base.Update(gameTime);
         }

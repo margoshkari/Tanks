@@ -148,12 +148,11 @@ namespace Server
                 createfile.Close();
             }
 
-            text = MaxElements();
-            File.WriteAllText(@$"C:\ProgramData\Tanks\rating.txt", text);
+            text = Sort();
+            RewriteFile(text);
         }
-        static string MaxElements()
+        static string Sort()
         {
-            string text = string.Empty;
             Dictionary<int, int> values = new Dictionary<int, int>();
 
             for (int i = 0; i < tanks.Count; i++)
@@ -161,13 +160,42 @@ namespace Server
 
             values = values.OrderBy(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
 
-            int length = (values.Count <= 3) ? values.Count : 3;
+            return $"ID: {values.Last().Key} Score: {values.Last().Value}\n";
+        }
+        static void RewriteFile(string text)
+        {
+            bool isAdd = false;
+            List<string> lines = File.ReadLines(@$"C:\ProgramData\Tanks\rating.txt").ToList().Where(item => item != string.Empty).ToList();
 
-            for (int i = 0; i < length; i++)
-                if (values.ElementAt(i).Value > 0)
-                    text += $"ID: {values.ElementAt(i).Key} Score: {values.ElementAt(i).Value}\n";
+            if (lines.Any(item => item.Contains(text.Split("Score:")[0])))
+            {
+                if (lines.Count == 1)
+                    lines[lines.FindIndex(item => item.Contains(text.Split("Score:")[0]))] = text;
+                else
+                {
+                    isAdd = true;
+                    lines.Remove(lines.Find(item => item.Contains(text.Split("Score:")[0])));
+                }
+                  
+            }
+            else
+                isAdd = true;
 
-            return text;
+            if (lines.Count >= 3)
+            {
+                for (int i = 0; i < lines.Count; i++)
+                {
+                    if (int.Parse(lines[i].Split("Score: ")[1]) < int.Parse(text.Split("Score: ")[1]))
+                    {
+                        lines.Remove(lines[i]);
+                    }
+                }
+            }
+
+            if (lines.Count <= 2 && isAdd)
+                lines.Add(text);
+
+            File.WriteAllLines(@$"C:\ProgramData\Tanks\rating.txt", lines);
         }
     }
 }

@@ -52,10 +52,10 @@ namespace Client
             if (currentTank.tank.ID == 0 && tanks.Count > 0)
             {
                 currentTank.tank.ID = tanks.Last().ID;
-                if (GetColor())
+                if (GetData())
                     currentTank.tank.Color = this.color;
-                else
-                    SaveColor();
+                else if(currentTank.tank.ID > 0)
+                    SaveData();
             }
 
             foreach (var item in tanks)
@@ -269,20 +269,22 @@ namespace Client
             }
 
         }
-        private void SaveColor()
+        public void SaveData()
         {
             if (!Directory.Exists(@"C:\ProgramData\Tanks"))
                 Directory.CreateDirectory(@"C:\ProgramData\Tanks");
-            if (!File.Exists(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt"))
-                File.WriteAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt", $"{currentTank.tank.Color[0]}:{currentTank.tank.Color[1]}:{currentTank.tank.Color[2]}");
+
+            File.WriteAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt", $"{currentTank.tank.Color[0]}:{currentTank.tank.Color[1]}:{currentTank.tank.Color[2]}\nScore: {currentTank.tank.Score}");
         }
-        private bool GetColor()
+        private bool GetData()
         {
             if (File.Exists(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt"))
             {
-                this.color[0] = int.Parse(File.ReadAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt").Split(":")[0]);
-                this.color[1] = int.Parse(File.ReadAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt").Split(":")[1]);
-                this.color[2] = int.Parse(File.ReadAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt").Split(":")[2]);
+                this.color[0] = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[0].Split(":")[0]);
+                this.color[1] = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[0].Split(":")[1]);
+                this.color[2] = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[0].Split(":")[2]);
+
+                currentTank.tank.Score = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[1].Split("Score: ")[1]);
                 return true;
             }
             return false;
@@ -315,6 +317,7 @@ namespace Client
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
+                SaveData();
                 isActive = false;
             }
         }
