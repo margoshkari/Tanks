@@ -1,6 +1,6 @@
 ﻿
 
-namespace Client
+namespace Server
 {
     public static class MapCreation
     {

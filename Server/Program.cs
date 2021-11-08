@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Text.Json;
 using TankDll;
 using System.Threading;
+using System.IO;
 
 namespace Server
 {
@@ -22,6 +23,7 @@ namespace Server
             {
                 serverData.socket.Bind(serverData.iPEndPoint);
                 serverData.socket.Listen(10);
+                SaveMap();
 
                 Task.Factory.StartNew(() => Connect());
 
@@ -38,15 +40,18 @@ namespace Server
         {
             while (true)
             {
-                serverData.socketClient = serverData.socket.Accept();
-                serverData.socketClientsList.Add(serverData.socketClient);
-                tanks.Add(new Tank());
-                ID++;
+                if(serverData.socketClientsList.Count < 4)
+                {
+                    serverData.socketClient = serverData.socket.Accept();
+                    serverData.socketClientsList.Add(serverData.socketClient);
+                    tanks.Add(new Tank());
+                    ID++;
 
-                tasks.Add(new Task(() => GetTank()));
-                tasks.Last().Start();
+                    tasks.Add(new Task(() => GetTank()));
+                    tasks.Last().Start();
 
-                Console.WriteLine($"Client { tanks.Last().ID} connected!");
+                    Console.WriteLine($"Client { ID} connected!");
+                }
             }
         }
         static void GetTank()
@@ -106,6 +111,23 @@ namespace Server
                     Console.WriteLine("SendData(): " + ex.Message);
                 }
             }
+        }
+
+        static void SaveMap()
+        {
+            if (File.Exists(@$"C:\ProgramData\Tanks\map.txt"))
+                File.Delete(@$"C:\ProgramData\Tanks\map.txt");
+            if (!File.Exists(@$"C:\ProgramData\Tanks\map.txt"))
+            {
+                for (int i = 0; i < MapCreation.map.GetLength(0); i++)
+                {
+                    for (int j = 0; j < MapCreation.map.GetLength(1); j++)
+                    {
+                        File.AppendAllText(@$"C:\ProgramData\Tanks\map.txt", MapCreation.map[i, j].ToString());
+                    }
+                    File.AppendAllText(@$"C:\ProgramData\Tanks\map.txt", "\n");
+                }
+            }  
         }
     }
 }

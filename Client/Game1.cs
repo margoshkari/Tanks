@@ -70,6 +70,11 @@ namespace Client
 
             Window.Title = currentTank.tank.ID.ToString();
 
+            //if(currentTank.tank.HP <= 0)
+            //{
+            //    this.Exit();
+            //}
+
             foreach (var item in tanks)
             {
                 tankSprites.Add(new Sprite(Content.Load<Texture2D>(@"Textures\tank"), Content.Load<Texture2D>(@"Textures\bullet"), item));
@@ -288,15 +293,26 @@ namespace Client
         }
         private void CreateMap()
         {
-            for (int i = 0; i < MapCreation.map.GetLength(0); i++)
+            int i = 0, j = 0;
+            if (File.Exists(@$"C:\ProgramData\Tanks\map.txt"))
             {
-                for (int j = 0; j < MapCreation.map.GetLength(1); j++)
+                foreach (var item in File.ReadAllText(@$"C:\ProgramData\Tanks\map.txt").ToList())
                 {
-                    if (MapCreation.map[i, j] == 'X')
-                        wallSprites[i, j] = new Map(j * 40, i * 40, true);
+                    if (item == '\n')
+                    {
+                        i++;
+                        j = 0;
+                    }
                     else
-                        wallSprites[i, j] = new Map(j * 40, i * 40, false);
-                }
+                    {
+                        if (item == 'X')
+                            wallSprites[i, j] = new Map(j * 40, i * 40, true);
+                        else
+                            wallSprites[i, j] = new Map(j * 40, i * 40, false);
+
+                         j++;
+                    }
+                }   
             }
         }
         public void SaveColor()
