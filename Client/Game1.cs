@@ -1,13 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using TankDll;
 
 namespace Client
 {
@@ -55,13 +48,14 @@ namespace Client
 
             if (menu.playButton.isClick)
             {
-                menu.playButton.isClick = false;
                 gameplay.isActive = true;
+                menu.playButton.isClick = false;
             }
             if (menu.ratingButton.isClick)
             {
-                menu.ratingButton.isClick = false;
                 rating.isActive = true;
+                menu.ratingButton.isClick = false;
+                rating.currentScore = gameplay.currentTank.tank.Score;
             }
             Window.Title = gameplay.currentTank.tank.Score.ToString();
 

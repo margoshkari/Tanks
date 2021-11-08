@@ -8,14 +8,12 @@ namespace Client
 {
     public class Menu
     {
-        public bool isActive;
         public Button playButton;
         public Button ratingButton;
         private Button exitButton;
         private SpriteFont font;
         public Menu()
         {
-            isActive = true;
         }
         public void LoadContent(ContentManager content)
         {

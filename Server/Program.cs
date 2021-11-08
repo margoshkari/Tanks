@@ -40,7 +40,7 @@ namespace Server
         {
             while (true)
             {
-                if(serverData.socketClientsList.Count < 4)
+                if (serverData.socketClientsList.Count < 4)
                 {
                     serverData.socketClient = serverData.socket.Accept();
                     serverData.socketClientsList.Add(serverData.socketClient);
@@ -60,6 +60,7 @@ namespace Server
             int id = ID;
             string json = string.Empty;
             bool isConnected = true;
+            bool isSaveRating = true;
 
             while (isConnected)
             {
@@ -74,6 +75,11 @@ namespace Server
 
                         tanks[index].ID = id;
 
+                        if (tanks[index].HP <= 0 && isSaveRating)
+                        {
+                            isSaveRating = false;
+                            SaveRating();
+                        }
                     }
                     else
                     {
@@ -113,22 +119,55 @@ namespace Server
                 }
             }
         }
-
         static void SaveMap()
         {
-            if (File.Exists(@$"C:\ProgramData\Tanks\map.txt"))
-                File.Delete(@$"C:\ProgramData\Tanks\map.txt");
             if (!File.Exists(@$"C:\ProgramData\Tanks\map.txt"))
             {
-                for (int i = 0; i < MapCreation.map.GetLength(0); i++)
+                var file = File.Create(@$"C:\ProgramData\Tanks\map.txt");
+                file.Close();
+            }
+
+            if (File.Exists(@$"C:\ProgramData\Tanks\map.txt"))
+                File.WriteAllText(@$"C:\ProgramData\Tanks\map.txt", string.Empty);
+
+            for (int i = 0; i < MapCreation.map.GetLength(0); i++)
+            {
+                for (int j = 0; j < MapCreation.map.GetLength(1); j++)
                 {
-                    for (int j = 0; j < MapCreation.map.GetLength(1); j++)
-                    {
-                        File.AppendAllText(@$"C:\ProgramData\Tanks\map.txt", MapCreation.map[i, j].ToString());
-                    }
-                    File.AppendAllText(@$"C:\ProgramData\Tanks\map.txt", "\n");
+                    File.AppendAllText(@$"C:\ProgramData\Tanks\map.txt", MapCreation.map[i, j].ToString());
                 }
-            }  
+                File.AppendAllText(@$"C:\ProgramData\Tanks\map.txt", "\n");
+            }
+        }
+        static void SaveRating()
+        {
+            string text = string.Empty;
+            if (!File.Exists(@$"C:\ProgramData\Tanks\rating.txt"))
+            {
+                var createfile = File.Create(@$"C:\ProgramData\Tanks\rating.txt");
+                createfile.Close();
+            }
+
+            text = MaxElements();
+            File.WriteAllText(@$"C:\ProgramData\Tanks\rating.txt", text);
+        }
+        static string MaxElements()
+        {
+            string text = string.Empty;
+            Dictionary<int, int> values = new Dictionary<int, int>();
+
+            for (int i = 0; i < tanks.Count; i++)
+                values.Add(tanks[i].ID, tanks[i].Score);
+
+            values = values.OrderBy(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            int length = (values.Count <= 3) ? values.Count : 3;
+
+            for (int i = 0; i < length; i++)
+                if (values.ElementAt(i).Value > 0)
+                    text += $"ID: {values.ElementAt(i).Key} Score: {values.ElementAt(i).Value}\n";
+
+            return text;
         }
     }
 }
