@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Client
 {
@@ -9,24 +10,32 @@ namespace Client
     {
         public bool isActive = true;
         public Button playButton;
+        private Button exitButton;
         private SpriteFont font;
         public Menu()
         {
         }
         public void LoadContent(ContentManager content)
         {
-            playButton = new Button(content.Load<Texture2D>(@"Textures\playBtn"));
+            playButton = new Button(content.Load<Texture2D>(@"Textures\playBtn"), 300, 150);
+            exitButton = new Button(content.Load<Texture2D>(@"Textures\playBtn"), playButton.CoordX, playButton.CoordY + playButton.Height + 10);
             font = content.Load<SpriteFont>(@"Font\font_20");
         }
         public void Update()
         {
             Hover(playButton);
+            Hover(exitButton);
+
+            if (exitButton.isClick)
+                Environment.Exit(0);
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
             _spriteBatch.Draw(playButton.texture, new Rectangle(playButton.CoordX, playButton.CoordY, playButton.Width, playButton.Height), playButton.color);
+            _spriteBatch.Draw(exitButton.texture, new Rectangle(exitButton.CoordX, exitButton.CoordY, exitButton.Width, exitButton.Height), exitButton.color);
             _spriteBatch.DrawString(font, "Play", new Vector2(playButton.CoordX + 50, playButton.CoordY + 10), Color.White);
+            _spriteBatch.DrawString(font, "Exit", new Vector2(exitButton.CoordX + 50, exitButton.CoordY + 10), Color.White);
         }
 
         public void Hover(Button button)

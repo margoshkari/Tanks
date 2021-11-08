@@ -87,6 +87,7 @@ namespace Server
                     Console.WriteLine("GetTank(): " + ex.Message);
                 }
             }
+            Console.WriteLine($"Client { id} disconnected!");
         }
         static void SendData()
         {

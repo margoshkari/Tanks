@@ -40,17 +40,17 @@ namespace Client
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 Exit();
 
-            if (menu.isActive)
-                menu.Update();
             if (gameplay.isActive)
                 gameplay.Update();
+            else
+                menu.Update();
 
             if (menu.playButton.isClick)
             {
-                menu.isActive = false;
+                menu.playButton.isClick = false;
                 gameplay.isActive = true;
                 Window.Title = gameplay.currentTank.tank.ID.ToString();
             }
@@ -65,10 +65,10 @@ namespace Client
 
             _spriteBatch.Begin();
 
-            if(menu.isActive)
-                menu.Draw(_spriteBatch);
             if (gameplay.isActive)
                 gameplay.Draw(_spriteBatch);
+            else
+                menu.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

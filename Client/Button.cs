@@ -13,12 +13,12 @@ namespace Client
         public int CoordY { get; set; }
         public Color color { get; set; }
         public bool isClick { get; set; }
-        public Button(Texture2D texture)
+        public Button(Texture2D texture, int coordX, int cootdY)
         {
             Width = 150;
             Height = 50;
-            CoordX = 300;
-            CoordY = 200;
+            CoordX = coordX;
+            CoordY = cootdY;
             isClick = false;
             color = Color.BlueViolet;
             this.texture = texture;

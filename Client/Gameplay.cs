@@ -63,6 +63,7 @@ namespace Client
             TankMove();
             BulletMove();
             TankDeath();
+            Exit();
         }
         public void Draw(SpriteBatch _spriteBatch)
         {
@@ -303,6 +304,13 @@ namespace Client
                         j++;
                     }
                 }
+            }
+        }
+        private void Exit()
+        {
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                isActive = false;
             }
         }
     }
