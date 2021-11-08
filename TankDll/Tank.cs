@@ -4,6 +4,7 @@ namespace TankDll
 {
     public class Tank
     {
+        public int Score { get; set; }
         public int HP { get; set; }
         public int Damage { get; set; }
         public int ID { get; set; }
@@ -25,6 +26,7 @@ namespace TankDll
             Rotation = 0f;
             HP = 100;
             Damage = 20;
+            Score = 0;
             dir = Direction.Up;
         }
     }

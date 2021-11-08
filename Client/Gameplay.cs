@@ -14,22 +14,25 @@ namespace Client
 {
     public class Gameplay
     {
-        public bool isActive = false;
+        public bool isActive;
         private ClientData clientData;
         private List<Tank> tanks;
         private List<Sprite> tankSprites;
         public Sprite currentTank;
-        private Map[,] wallSprites = new Map[12, 20];
+        private Map[,] wallSprites;
         private Texture2D wallTexture;
-        private int[] color = new int[3];
+        private int[] color;
         private SpriteFont font;
         private ContentManager content;
         public Gameplay(ContentManager content)
         {
+            isActive = false;
+            color = new int[3];
             this.content = content;
             tanks = new List<Tank>();
-            tankSprites = new List<Sprite>();
             clientData = new ClientData();
+            wallSprites = new Map[12, 20];
+            tankSprites = new List<Sprite>();
             CreateMap();
         }
         public void LoadContent()
@@ -259,6 +262,8 @@ namespace Client
                         currentTank.tank.bullet.CoordY = -200;
                         currentTank.tank.bullet.CoordX = -200;
                         currentTank.tank.bullet.isActive = false;
+                        if (item.tank.HP - currentTank.tank.Damage <= 0)
+                            currentTank.tank.Score++;
                     }
                 }
             }

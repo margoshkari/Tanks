@@ -17,6 +17,7 @@ namespace Client
         private SpriteBatch _spriteBatch;
         private Menu menu;
         private Gameplay gameplay;
+        private Rating rating;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -33,8 +34,10 @@ namespace Client
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             menu = new Menu();
+            rating = new Rating();
             gameplay = new Gameplay(Content);
             menu.LoadContent(Content);
+            rating.LoadContent(Content);
             gameplay.LoadContent();
         }
 
@@ -45,6 +48,8 @@ namespace Client
 
             if (gameplay.isActive)
                 gameplay.Update();
+            else if (rating.isActive)
+                rating.Update();
             else
                 menu.Update();
 
@@ -52,9 +57,13 @@ namespace Client
             {
                 menu.playButton.isClick = false;
                 gameplay.isActive = true;
-                Window.Title = gameplay.currentTank.tank.ID.ToString();
             }
-            
+            if (menu.ratingButton.isClick)
+            {
+                menu.ratingButton.isClick = false;
+                rating.isActive = true;
+            }
+            Window.Title = gameplay.currentTank.tank.Score.ToString();
 
             base.Update(gameTime);
         }
@@ -67,6 +76,8 @@ namespace Client
 
             if (gameplay.isActive)
                 gameplay.Draw(_spriteBatch);
+            else if (rating.isActive)
+                rating.Draw(_spriteBatch);
             else
                 menu.Draw(_spriteBatch);
 
