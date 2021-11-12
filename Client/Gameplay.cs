@@ -15,8 +15,8 @@ namespace Client
     public class Gameplay
     {
         public bool isActive;
-        private ClientData clientData;
-        private List<Tank> tanks;
+        public ClientData clientData;
+        public List<Tank> tanks;
         private List<Sprite> tankSprites;
         public Sprite currentTank;
         private Map[,] wallSprites;

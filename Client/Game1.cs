@@ -41,7 +41,7 @@ namespace Client
                 gameplay.SaveData();
                 Exit();
             }
-                
+
 
             if (gameplay.isActive)
                 gameplay.Update();
@@ -65,7 +65,7 @@ namespace Client
 
             base.Update(gameTime);
         }
-       
+
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
