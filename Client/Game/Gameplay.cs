@@ -38,6 +38,12 @@ namespace Client
         public void LoadContent()
         {
             clientData.socket.Connect(clientData.iPEndPoint);
+            if (clientData.GetMsg().Contains("serverfull"))
+            {
+                var res = System.Windows.Forms.MessageBox.Show("Server Full!");
+                if (res == System.Windows.Forms.DialogResult.OK)
+                    Environment.Exit(0);
+            }
             currentTank = new Sprite(content.Load<Texture2D>(@"Textures\tank"), content.Load<Texture2D>(@"Textures\bullet"), new Tank());
             wallTexture = content.Load<Texture2D>(@"Textures\wall");
             font = content.Load<SpriteFont>(@"Font\font_12");
@@ -54,7 +60,7 @@ namespace Client
                 currentTank.tank.ID = tanks.Last().ID;
                 if (GetData())
                     currentTank.tank.Color = this.color;
-                else if(currentTank.tank.ID > 0)
+                else if (currentTank.tank.ID > 0)
                     SaveData();
             }
 
@@ -107,7 +113,7 @@ namespace Client
         {
             foreach (var item in tankSprites)
             {
-                if (item.tank.ID != currentTank.tank.ID && 
+                if (item.tank.ID != currentTank.tank.ID &&
                     (item.tank.CoordX != currentTank.tank.CoordX && item.tank.CoordY != currentTank.tank.CoordY))
                 {
                     if (rect.Intersects(new Rectangle(item.tank.CoordX, item.tank.CoordY, item.tankTexture.Width, item.tankTexture.Height)))
@@ -321,6 +327,10 @@ namespace Client
             {
                 SaveData();
                 isActive = false;
+            }
+            if (tanks.Count + 1 > 5)
+            {
+                Environment.Exit(0);
             }
         }
     }

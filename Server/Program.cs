@@ -40,10 +40,10 @@ namespace Server
         {
             while (true)
             {
-                if (serverData.socketClientsList.Count < 4)
+                serverData.socketClient = serverData.socket.Accept();
+                serverData.socketClientsList.Add(serverData.socketClient);
+                if (serverData.socketClientsList.Count <= 4)
                 {
-                    serverData.socketClient = serverData.socket.Accept();
-                    serverData.socketClientsList.Add(serverData.socketClient);
                     tanks.Add(new Tank());
                     ID++;
 
@@ -51,6 +51,11 @@ namespace Server
                     tasks.Last().Start();
 
                     Console.WriteLine($"Client { ID} connected!");
+                }
+                else
+                {
+                    serverData.socketClient.Send(Encoding.Unicode.GetBytes("serverfull"));
+                    serverData.socketClientsList.Remove(serverData.socketClientsList.Last());
                 }
             }
         }
@@ -176,7 +181,7 @@ namespace Server
                     isAdd = true;
                     lines.Remove(lines.Find(item => item.Contains(text.Split("Score:")[0])));
                 }
-                  
+
             }
             else
                 isAdd = true;

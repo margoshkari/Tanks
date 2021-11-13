@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using WinFormsApp1;
 
 namespace Client
@@ -21,7 +22,6 @@ namespace Client
 
         protected override void Initialize()
         {
-            Main.Start();
             base.Initialize();
         }
 
@@ -34,6 +34,7 @@ namespace Client
             menu.LoadContent(Content);
             rating.LoadContent(Content);
             gameplay.LoadContent();
+            Main.Start();
         }
 
         protected override void Update(GameTime gameTime)
