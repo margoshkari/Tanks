@@ -48,7 +48,10 @@ namespace Client
             else if (rating.isActive)
                 rating.Update();
             else
+            {
+               
                 menu.Update();
+            }
 
             if (menu.playButton.isClick)
             {

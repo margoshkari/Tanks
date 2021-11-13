@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using WinFormsApp1;
 
 namespace Client
 {
@@ -21,6 +22,7 @@ namespace Client
             ratingButton = new Button(content.Load<Texture2D>(@"Textures\playBtn"), playButton.CoordX, playButton.CoordY + playButton.Height + 10);
             exitButton = new Button(content.Load<Texture2D>(@"Textures\playBtn"), ratingButton.CoordX, ratingButton.CoordY + ratingButton.Height + 10);
             font = content.Load<SpriteFont>(@"Font\font_20");
+            Main.Start();
         }
         public void Update()
         {

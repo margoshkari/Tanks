@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TankDll", "TankDll\TankDll.csproj", "{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsApp1", "..\WinFormsApp1\WinFormsApp1\WinFormsApp1.csproj", "{9BB76C46-C543-477D-A43F-C7049B3CA662}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Authorization", "Authorization\Authorization\Authorization.csproj", "{F75F5806-69B6-474F-8F0D-EA39F59CDD2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E86CDAC5-FC16-43B1-AD9F-426FF39D212C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9BB76C46-C543-477D-A43F-C7049B3CA662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9BB76C46-C543-477D-A43F-C7049B3CA662}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9BB76C46-C543-477D-A43F-C7049B3CA662}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9BB76C46-C543-477D-A43F-C7049B3CA662}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F75F5806-69B6-474F-8F0D-EA39F59CDD2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F75F5806-69B6-474F-8F0D-EA39F59CDD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F75F5806-69B6-474F-8F0D-EA39F59CDD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F75F5806-69B6-474F-8F0D-EA39F59CDD2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
