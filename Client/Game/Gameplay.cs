@@ -37,7 +37,7 @@ namespace Client
         }
         public void LoadContent()
         {
-            //clientData.socket.Connect(clientData.iPEndPoint);
+            clientData.socket.Connect(clientData.iPEndPoint);
             currentTank = new Sprite(content.Load<Texture2D>(@"Textures\tank"), content.Load<Texture2D>(@"Textures\bullet"), new Tank());
             wallTexture = content.Load<Texture2D>(@"Textures\wall");
             font = content.Load<SpriteFont>(@"Font\font_12");

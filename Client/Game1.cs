@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using WinFormsApp1;
 
 namespace Client
 {
@@ -20,6 +21,7 @@ namespace Client
 
         protected override void Initialize()
         {
+            Main.Start();
             base.Initialize();
         }
 
@@ -42,16 +44,12 @@ namespace Client
                 Exit();
             }
 
-
             if (gameplay.isActive)
                 gameplay.Update();
             else if (rating.isActive)
                 rating.Update();
             else
-            {
-               
                 menu.Update();
-            }
 
             if (menu.playButton.isClick)
             {
@@ -74,14 +72,12 @@ namespace Client
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-
             if (gameplay.isActive)
                 gameplay.Draw(_spriteBatch);
             else if (rating.isActive)
                 rating.Draw(_spriteBatch);
             else
                 menu.Draw(_spriteBatch);
-
             _spriteBatch.End();
 
             base.Draw(gameTime);
