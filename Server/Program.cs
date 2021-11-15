@@ -19,6 +19,7 @@ namespace Server
         static List<Tank> tanks = new List<Tank>();
         static List<Task> tasks = new List<Task>();
         static int ID = 0;
+        static List<User> users = new List<User>();
         static User user = new User();
         static void Main(string[] args)
         {
@@ -213,22 +214,31 @@ namespace Server
                     if (File.Exists(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"))
                     {
                         user = JsonSerializer.Deserialize<User>(File.ReadAllText(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"));
-                        if (user.Password == ComputeSha256Hash(msg.Split(':')[1]))
+                        if(!UserExist())
                         {
-                            serverData.socketClient.Send(Encoding.Unicode.GetBytes("success"));
-                            isLogin = true;
+                            if (user.Password == ComputeSha256Hash(msg.Split(':')[1]))
+                            {
+                                serverData.socketClient.Send(Encoding.Unicode.GetBytes("success"));
+                                isLogin = true;
 
-                            tanks.Add(new Tank());
-                            ID++;
+                                users.Add(user);
 
-                            tasks.Add(new Task(() => GetTank()));
-                            tasks.Last().Start();
+                                tanks.Add(new Tank());
+                                ID++;
 
-                            Console.WriteLine($"Client { ID} connected!");
+                                tasks.Add(new Task(() => GetTank()));
+                                tasks.Last().Start();
+
+                                Console.WriteLine($"Client { ID} connected!");
+                            }
+                            else
+                            {
+                                serverData.socketClient.Send(Encoding.Unicode.GetBytes("fail"));
+                            }
                         }
                         else
                         {
-                            serverData.socketClient.Send(Encoding.Unicode.GetBytes("fail"));
+                            serverData.socketClient.Send(Encoding.Unicode.GetBytes("exist"));
                         }
                     }
                     else
@@ -322,6 +332,16 @@ namespace Server
             {
                 Console.WriteLine("SendPassword(): " + ex.Message);
             }
+        }
+
+        static bool UserExist()
+        {
+            for (int i = 0; i < users.Count; i++)
+            {
+                if (users[i].Login == user.Login)
+                    return true;
+            }
+            return false;
         }
     }
 }
