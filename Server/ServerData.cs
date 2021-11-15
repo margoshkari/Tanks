@@ -17,7 +17,7 @@ namespace Server
         public IPEndPoint iPEndPoint;
         public ServerData()
         {
-            data = new byte[1024];
+            data = new byte[256];
             socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             iPEndPoint = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 8000);
             socketClientsList = new List<Socket>();

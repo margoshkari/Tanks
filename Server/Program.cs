@@ -7,6 +7,7 @@ using System.Text.Json;
 using TankDll;
 using System.Threading;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace Server
 {
@@ -16,6 +17,7 @@ namespace Server
         static List<Tank> tanks = new List<Tank>();
         static List<Task> tasks = new List<Task>();
         static int ID = 0;
+        static User user = new User();
         static void Main(string[] args)
         {
             Console.WriteLine("Start server...");
@@ -44,13 +46,7 @@ namespace Server
                 serverData.socketClientsList.Add(serverData.socketClient);
                 if (serverData.socketClientsList.Count <= 4)
                 {
-                    tanks.Add(new Tank());
-                    ID++;
-
-                    tasks.Add(new Task(() => GetTank()));
-                    tasks.Last().Start();
-
-                    Console.WriteLine($"Client { ID} connected!");
+                    Task.Factory.StartNew(() => Authorization());
                 }
                 else
                 {
@@ -108,13 +104,12 @@ namespace Server
                 try
                 {
                     json = JsonSerializer.Serialize<List<Tank>>(tanks);
-                    foreach (var item in serverData.socketClientsList)
+                    for (int i = 0; i < tanks.Count; i++)
                     {
-                        if (item.Connected)
+                        if (serverData.socketClientsList[i].Connected)
                         {
-                            item.Send(Encoding.Unicode.GetBytes(json));
+                            serverData.socketClientsList[i].Send(Encoding.Unicode.GetBytes(json));
                         }
-
                     }
                     Thread.Sleep(10);
                 }
@@ -201,6 +196,57 @@ namespace Server
                 lines.Add(text);
 
             File.WriteAllLines(@$"C:\ProgramData\Tanks\rating.txt", lines);
+        }
+        static void Authorization()
+        {
+            bool isLogin = false;
+            string msg = string.Empty;
+            while(!isLogin)
+            {
+                msg = serverData.GetMsg();
+                if (File.Exists(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"))
+                {
+                    user = JsonSerializer.Deserialize<User>(File.ReadAllText(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"));
+                    if (user.Password == ComputeSha256Hash(msg.Split(':')[1]))
+                    {
+                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("success"));
+                        isLogin = true;
+
+                        tanks.Add(new Tank());
+                        ID++;
+
+                        tasks.Add(new Task(() => GetTank()));
+                        tasks.Last().Start();
+
+                        Console.WriteLine($"Client { ID} connected!");
+                    }
+                    else
+                    {
+                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("fail"));
+                    }
+                }
+                else
+                {
+                    serverData.socketClient.Send(Encoding.Unicode.GetBytes("not found"));
+                }
+            }
+        }
+        static string ComputeSha256Hash(string rawData)
+        {
+            // Create a SHA256   
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                // ComputeHash - returns byte array  
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+
+                // Convert byte array to a string   
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
         }
     }
 }

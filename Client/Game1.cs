@@ -28,13 +28,13 @@ namespace Client
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Main.Start();
             menu = new Menu();
             rating = new Rating();
             gameplay = new Gameplay(Content);
             menu.LoadContent(Content);
             rating.LoadContent(Content);
             gameplay.LoadContent();
-            Main.Start();
         }
 
         protected override void Update(GameTime gameTime)
