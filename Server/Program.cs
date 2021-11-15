@@ -8,6 +8,8 @@ using TankDll;
 using System.Threading;
 using System.IO;
 using System.Security.Cryptography;
+using System.Net.Mail;
+using System.Net;
 
 namespace Server
 {
@@ -199,37 +201,81 @@ namespace Server
         }
         static void Authorization()
         {
+            Console.WriteLine("Authorization");
             bool isLogin = false;
             string msg = string.Empty;
-            while(!isLogin)
+            while (!isLogin)
             {
-                msg = serverData.GetMsg();
-                if (File.Exists(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"))
+                if (serverData.GetMsg() == "login")
                 {
-                    user = JsonSerializer.Deserialize<User>(File.ReadAllText(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"));
-                    if (user.Password == ComputeSha256Hash(msg.Split(':')[1]))
+                    serverData.socketClient.Send(Encoding.Unicode.GetBytes("login"));
+                    msg = serverData.GetMsg();
+                    if (File.Exists(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"))
                     {
-                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("success"));
-                        isLogin = true;
+                        user = JsonSerializer.Deserialize<User>(File.ReadAllText(@$"C:\ProgramData\Tanks\{msg.Split(':')[0]}.json"));
+                        if (user.Password == ComputeSha256Hash(msg.Split(':')[1]))
+                        {
+                            serverData.socketClient.Send(Encoding.Unicode.GetBytes("success"));
+                            isLogin = true;
 
-                        tanks.Add(new Tank());
-                        ID++;
+                            tanks.Add(new Tank());
+                            ID++;
 
-                        tasks.Add(new Task(() => GetTank()));
-                        tasks.Last().Start();
+                            tasks.Add(new Task(() => GetTank()));
+                            tasks.Last().Start();
 
-                        Console.WriteLine($"Client { ID} connected!");
+                            Console.WriteLine($"Client { ID} connected!");
+                        }
+                        else
+                        {
+                            serverData.socketClient.Send(Encoding.Unicode.GetBytes("fail"));
+                        }
                     }
                     else
                     {
-                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("fail"));
+                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("not found"));
                     }
                 }
                 else
                 {
-                    serverData.socketClient.Send(Encoding.Unicode.GetBytes("not found"));
+                    Registration();
                 }
             }
+        }
+        static void Registration()
+        {
+            Console.WriteLine("Registration");
+            bool isRegister = false;
+            string msg = string.Empty;
+            while (!isRegister)
+            {
+                if (serverData.GetMsg() == "register")
+                {
+                    serverData.socketClient.Send(Encoding.Unicode.GetBytes("register"));
+                    msg = serverData.GetMsg();
+                    user.Email = msg.Split(':')[0];
+                    user.Login = msg.Split(':')[1];
+                    user.Password = msg.Split(':')[2];
+                    if (File.Exists(@$"C:\ProgramData\Tanks\{user.Login}.json"))
+                    {
+                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("exist"));
+                    }
+                    else
+                    {
+                        serverData.socketClient.Send(Encoding.Unicode.GetBytes("success"));
+                        isRegister = true;
+                        SendPassword();
+                        user.Password = ComputeSha256Hash(user.Password);
+                        string json = JsonSerializer.Serialize<User>(user);
+                        File.WriteAllText(@$"C:\ProgramData\Tanks\{user.Login}.json", json);
+                    }
+                }
+                else
+                {
+                    Authorization();
+                }
+            }
+            Authorization();
         }
         static string ComputeSha256Hash(string rawData)
         {
@@ -246,6 +292,35 @@ namespace Server
                     builder.Append(bytes[i].ToString("x2"));
                 }
                 return builder.ToString();
+            }
+        }
+
+        static void SendPassword()
+        {
+            try
+            {
+                // отправитель - устанавливаем адрес и отображаемое в письме имя
+                MailAddress from = new MailAddress("tanksproga@gmail.com", user.Login);
+                // кому отправляем
+                MailAddress to = new MailAddress(user.Email);
+                // создаем объект сообщения
+                MailMessage m = new MailMessage(from, to);
+                // тема письма
+                m.Subject = "Тест";
+                // текст письма
+                m.Body = ComputeSha256Hash(user.Password);
+                // письмо представляет код html
+                m.IsBodyHtml = true;
+                // адрес smtp-сервера и порт, с которого будем отправлять письмо
+                SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587);
+                // логин и пароль
+                smtp.Credentials = new NetworkCredential("tanksproga@gmail.com", "tanks123");
+                smtp.EnableSsl = true;
+                smtp.Send(m);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("SendPassword(): " + ex.Message);
             }
         }
     }

@@ -9,13 +9,13 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using TankDll;
+using WinFormsApp1;
 
 namespace Client
 {
     public class Gameplay
     {
         public bool isActive;
-        public ClientData clientData;
         public List<Tank> tanks;
         private List<Sprite> tankSprites;
         public Sprite currentTank;
@@ -30,20 +30,12 @@ namespace Client
             color = new int[3];
             this.content = content;
             tanks = new List<Tank>();
-            clientData = new ClientData();
             wallSprites = new Map[12, 20];
             tankSprites = new List<Sprite>();
             CreateMap();
         }
         public void LoadContent()
         {
-            clientData.socket.Connect(clientData.iPEndPoint);
-            if (clientData.GetMsg().Contains("serverfull"))
-            {
-                var res = System.Windows.Forms.MessageBox.Show("Server Full!");
-                if (res == System.Windows.Forms.DialogResult.OK)
-                    Environment.Exit(0);
-            }
             currentTank = new Sprite(content.Load<Texture2D>(@"Textures\tank"), content.Load<Texture2D>(@"Textures\bullet"), new Tank());
             wallTexture = content.Load<Texture2D>(@"Textures\wall");
             font = content.Load<SpriteFont>(@"Font\font_12");
@@ -98,7 +90,7 @@ namespace Client
             try
             {
                 string json = string.Empty;
-                json = clientData.GetMsg();
+                json = (Main.clientData.GetMsg());
                 tanks = JsonSerializer.Deserialize<List<Tank>>(json);
             }
             catch (Exception ex) { }
@@ -107,7 +99,7 @@ namespace Client
         {
             string json = string.Empty;
             json = JsonSerializer.Serialize<Tank>(currentTank.tank);
-            clientData.socket.Send(Encoding.Unicode.GetBytes(json));
+            Main.clientData.socket.Send(Encoding.Unicode.GetBytes(json));
         }
         private bool TankCollision(Rectangle rect)
         {
