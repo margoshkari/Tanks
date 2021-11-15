@@ -21,13 +21,12 @@ namespace Client
         public Sprite currentTank;
         private Map[,] wallSprites;
         private Texture2D wallTexture;
-        private int[] color;
         private SpriteFont font;
         private ContentManager content;
+        private User user = new User();
         public Gameplay(ContentManager content)
         {
             isActive = false;
-            color = new int[3];
             this.content = content;
             tanks = new List<Tank>();
             wallSprites = new Map[12, 20];
@@ -36,6 +35,7 @@ namespace Client
         }
         public void LoadContent()
         {
+            user = Main.user;
             currentTank = new Sprite(content.Load<Texture2D>(@"Textures\tank"), content.Load<Texture2D>(@"Textures\bullet"), new Tank());
             wallTexture = content.Load<Texture2D>(@"Textures\wall");
             font = content.Load<SpriteFont>(@"Font\font_12");
@@ -51,7 +51,7 @@ namespace Client
             {
                 currentTank.tank.ID = tanks.Last().ID;
                 if (GetData())
-                    currentTank.tank.Color = this.color;
+                    currentTank.tank.Color = user.Color;
                 else if (currentTank.tank.ID > 0)
                     SaveData();
             }
@@ -274,17 +274,14 @@ namespace Client
             if (!Directory.Exists(@"C:\ProgramData\Tanks"))
                 Directory.CreateDirectory(@"C:\ProgramData\Tanks");
 
-            File.WriteAllText(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt", $"{currentTank.tank.Color[0]}:{currentTank.tank.Color[1]}:{currentTank.tank.Color[2]}\nScore: {currentTank.tank.Score}");
+            File.WriteAllText(@$"C:\ProgramData\Tanks\{user.Login}.json", JsonSerializer.Serialize<User>(user));
         }
         private bool GetData()
         {
-            if (File.Exists(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt"))
+            if (File.Exists(@$"C:\ProgramData\Tanks\{user.Login}.json"))
             {
-                this.color[0] = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[0].Split(":")[0]);
-                this.color[1] = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[0].Split(":")[1]);
-                this.color[2] = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[0].Split(":")[2]);
-
-                currentTank.tank.Score = int.Parse(File.ReadAllLines(@$"C:\ProgramData\Tanks\{currentTank.tank.ID}.txt")[1].Split("Score: ")[1]);
+                user = JsonSerializer.Deserialize<User>(File.ReadAllText(@$"C:\ProgramData\Tanks\{user.Login}.json"));
+                currentTank.tank.Score = user.Score;
                 return true;
             }
             return false;
